@@ -17,10 +17,31 @@ Dojo Core
 -------------------------------------------------------------------------------
 Documentation
 
-Read the source :)
+For right now, it's read the source :)
+
+To run the Rhino unit tests, use this command:
+cd dojo/util/doh
+java -jar ../shrinksafe/js.jar runner.js testModule=dojox.rails.tests.module
+
+To run the browser tests, use this command:
+cd dojo/dojox/tests
+open runTests.html
+
+(You may need to run the web tests via a server)
 
 -------------------------------------------------------------------------------
 Installation instructions
 
-See full documentation at URL given right above.
+To use this in your rails application, you can do the following
+
+<script type="text/javascript" src="/javascripts/dojo/dojo/dojo.js"></script>
+<script type="text/javascript" src="/javascripts/dojo/dojox/rails.js"></script>
+
+OR
+
+<script type="text/javascript" src="/javascripts/dojo/dojo/dojo.js"></script>
+<script type="text/javascript">
+  dojo.require("dojox.rails");
+</script>
+
 -------------------------------------------------------------------------------
