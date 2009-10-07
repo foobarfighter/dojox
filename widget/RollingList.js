@@ -1,15 +1,15 @@
 dojo.provide("dojox.widget.RollingList");
 dojo.experimental("dojox.widget.RollingList");
 
-dojo.require("dijit._Templated");
 dojo.require("dijit.layout.ContentPane");
+dojo.require("dijit._Templated");
+dojo.require("dijit._Contained");
 dojo.require("dijit.layout._LayoutWidget");
 dojo.require("dijit.Menu");
 dojo.require("dojox.html.metrics");
 dojo.require("dijit.form.Button");
 
 dojo.require("dojo.i18n"); 
-dojo.requireLocalization("dojox.widget", "RollingList"); 
 dojo.requireLocalization("dijit", "common");
 
 dojo.declare("dojox.widget._RollingListPane",
@@ -684,7 +684,7 @@ dojo.declare("dojox.widget.RollingList",
 		}
 	},
 	
-	addChild: function(/*Widget*/ widget, /*int?*/ insertIndex){
+	addChild: function(/*dijit._Widget*/ widget, /*int?*/ insertIndex){
 		// summary: adds a child to this rolling list - if passed an insertIndex,
 		//  then all children from that index on will be removed and destroyed
 		//  before adding the child.
@@ -736,7 +736,7 @@ dojo.declare("dojox.widget.RollingList",
 		});
 	},
 	
-	scrollIntoView: function(/* Widget */ childWidget){
+	scrollIntoView: function(/*dijit._Widget*/ childWidget){
 		// summary: scrolls the given widget into view
 		if(this._scrollingTimeout){ 
 			window.clearTimeout(this._scrollingTimeout);
@@ -972,7 +972,7 @@ dojo.declare("dojox.widget.RollingList",
 		var store = this.store;
 		if(!item || !store || !store.isItem(item)){
 			var i = new dijit.MenuItem({
-				label: dojo.i18n.getLocalization("dojox.widget", "RollingList", this.lang).empty,
+				label: "---",
 				disabled: true,
 				iconClass: "dojoxEmpty",
 				focus: function(){

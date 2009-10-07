@@ -33,7 +33,7 @@ dojo.require("dojox.html.entities");
 		var i;
 
 		// Compile regexps once for this call.
-		var rgxp_fixIEAttrs = /=[^"']\S+(\s|>)/g;
+		var rgxp_fixIEAttrs = /[=]([^"']+?)(\s|>)/g;
 		var rgxp_styleMatch = /style=("[^"]*"|'[^']*'|\S*)/gi;
 		var rgxp_attrsMatch = /\s\w+=("[^"]*"|'[^']*'|\S*)/gi;
 
@@ -262,19 +262,14 @@ dojo.require("dojox.html.entities");
 
 			// Also thanks to IE, we need to check for quotes around 
 			// attributes and insert if missing.
-			tag = tag.replace(rgxp_fixIEAttrs, function(match){
-				var endChar = match.length - 1;
-				match = "=\"" + match.substring(1, endChar) + 
-					"\"" + match.charAt(endChar);
-				return match;
-			});
+			tag = tag.replace(rgxp_fixIEAttrs,'="$1"$2');
 
 			// And lastly, thanks IE for changing style casing and end
 			// semi-colon and webkit adds spaces, so lets clean it up by
 			// sorting, etc, while we're at it.
 			tag = tag.replace(rgxp_styleMatch, function(match){
 				var sL = match.substring(0,6);
-				var style = match.substring(6, match.length).toLowerCase();
+				var style = match.substring(6, match.length);
 				var closure = style.charAt(0);
 				style = dojo.trim(style.substring(1,style.length -1));
 				style = style.split(";");
@@ -282,6 +277,8 @@ dojo.require("dojox.html.entities");
 				dojo.forEach(style, function(s){
 					s = dojo.trim(s);
 					if(s){
+						// Lower case the style name, leave the value alone.  Mainly a fixup for IE.
+						s = s.substring(0, s.indexOf(":")).toLowerCase() + s.substring(s.indexOf(":"), s.length);
 						trimmedStyles.push(s);
 					}
 				});
@@ -329,7 +326,7 @@ dojo.require("dojox.html.entities");
 				content.push(formatText(textContent));
 				textContent = "";
 			}
-			
+
 			// Determine if this has a closing tag or not!
 			if(!inline){
 				indent();
@@ -396,7 +393,8 @@ dojo.require("dojox.html.entities");
 				for(i = 0; i < children.length; i++){
 					var n = children[i];
 					if(n.nodeType === 1){
-						if(dojo.isIE && n.parentNode != node){
+						var tg = dojo.trim(n.tagName.toLowerCase());
+                        if(dojo.isIE && n.parentNode != node){
 							// IE is broken.  DOMs are supposed to be a tree.  
 							// But in the case of malformed HTML, IE generates a graph
 							// meaning one node ends up with multiple references 
@@ -405,29 +403,34 @@ dojo.require("dojox.html.entities");
 							// this because otherwise the source output HTML will have dups.
 							continue;
 						}
-
-						
-						//Process non-dup elements!
-						openTag(n);
-						if(n.tagName.toLowerCase() === "script"){
-							content.push(formatScript(n.innerHTML));
-						}else if(n.tagName.toLowerCase() === "pre"){
-							var preTxt = n.innerHTML;
-							if(dojo.isMoz){
-								//Mozilla screws this up, so fix it up.
-								preTxt = preTxt.replace("<br>", "\n");
-								preTxt = preTxt.replace("<pre>", "");
-								preTxt = preTxt.replace("</pre>", "");
-							}
-							// Add ending newline, if needed.
-							if(preTxt.charAt(preTxt.length - 1) !== "\n"){
-								preTxt += "\n";
-							}
-							content.push(preTxt);
+						if(tg && tg.charAt(0) === "/"){
+							// IE oddity.  Malformed HTML can put in odd tags like:
+							// </ >, </span>.  It treats a mismatched closure as a new
+							// start tag.  So, remove them.
+							continue;
 						}else{
-							processNode(n);
+							//Process non-dup, seemingly wellformed elements!
+							openTag(n);
+							if(tg === "script"){
+								content.push(formatScript(n.innerHTML));
+							}else if(tg === "pre"){
+								var preTxt = n.innerHTML;
+								if(dojo.isMoz){
+									//Mozilla screws this up, so fix it up.
+									preTxt = preTxt.replace("<br>", "\n");
+									preTxt = preTxt.replace("<pre>", "");
+									preTxt = preTxt.replace("</pre>", "");
+								}
+								// Add ending newline, if needed.
+								if(preTxt.charAt(preTxt.length - 1) !== "\n"){
+									preTxt += "\n";
+								}
+								content.push(preTxt);
+							}else{
+								processNode(n);
+							}
+							closeTag();
 						}
-						closeTag();
 					}else if(n.nodeType === 3 || n.nodeType === 4){
 						processTextNode(n);
 					}else if(n.nodeType === 8){
