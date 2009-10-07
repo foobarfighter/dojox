@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../dojo/dojo.js"
+	    djConfig="isDebug: true"></script>
+	<script type="text/javascript">
+		dojo.require("doh.runner");
+		dojo.require("dojox.rails");
+		
+		var parsedNodes;	
+		
+		doh.register("dojox.rails.tests.Parser", [
+			{
+				name: "parse",
+				runTest: function(t) {
+					t.is(2, dojox.rails.parse().length);
+				}
+			},
+			{
+				name: "delegate",
+				setUp: function() {
+					parsedNodes = dojox.rails.parse();
+				},
+				runTest: function(t) {
+					dojox.rails.delegate(parsedNodes);
+					t.t(true);
+				}
+			}
+		]);
+		
+		dojo.addOnLoad(function() {
+			doh.run();
+		});
+	</script>
+</head>
+<body>
+
+<form id="form-remote" method="post" data-js-type="remote">
+</form>
+
+<script type="application/json" data-js-type="observe_field">
+// <![CDATA[
+	{ "url": "/some/url" }
+// ]]>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../dojo/dojo.js"
+	    djConfig="isDebug: true, parseOnLoad: true"></script>
+	<script type="text/javascript">
+		dojo.require("doh.runner");
+		dojo.require("dojox.rails");
+		
+		doh.register("dojox.rails.tests.RemoteForm", [
+			{
+				name: "SomeTest",
+				setUp: function() {
+					console.debug("setUp");
+				},
+				tearDown: function() {
+					console.debug("tearDown");
+				},
+				runTest: function(t) {
+					t.t(true);
+				}
+			}
+		]);
+		
+		doh.run();
+	</script>
+</head>
+<body>
+
+
+<button dojoType="dijit.form.Rating">
+<form method="post" data-remote="true">
+</form>
+
+</body>
+</html>
