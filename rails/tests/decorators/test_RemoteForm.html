@@ -29,7 +29,99 @@
 <body>
 
 
-<form method="post" data-remote="true">
+<form id="test_base" target="/foo" method="post" data-js-type="remote">
+    <input type="input" name="foo[name]" value="Name" />
+    <select name="foo[state]">
+        <option value="AK" />
+        <option value="CA" />
+    </select>
+    <input type="radio" name="foo[sex]" value="Male" /> Male
+    <input type="radio" name="foo[sex]" value="Female" /> Female
+
+    <input type="checkbox" name="foo[food]" value="Beer" />
+    <input type="checkbox" name="foo[food]" value="Junk" />
+    <input type="checkbox" name="foo[food]" value="Health" />
+
+    <input type="button" name="foo[button]" value="my_button">
+    <input type="submit" name="foo[submit]" value="submit">
+</form>
+
+<form id="test_update" target="/foo" method="post" data-js-type="remote"
+      data-success-update="#test_success_update .success"
+      data-failure-update="#test_success_update .failure"
+      data-complete-update="#test_success_update .complete"
+      data-interactive-update="#test_success_update .interactive"
+      data-loaded-update="#test_success_update .loaded"
+      data-loading-update="#test_success_update .loading">
+
+    <input type="input" name="foo[name]" value="Name" />
+    <select name="foo[state]">
+        <option value="AK" />
+        <option value="CA" />
+    </select>
+    <input type="radio" name="foo[sex]" value="Male" /> Male
+    <input type="radio" name="foo[sex]" value="Female" /> Female
+
+    <input type="checkbox" name="foo[food]" value="Beer" />
+    <input type="checkbox" name="foo[food]" value="Junk" />
+    <input type="checkbox" name="foo[food]" value="Health" />
+
+    <input type="button" name="foo[button]" value="my_button">
+    <input type="submit" name="foo[submit]" value="submit">
+
+    <div class="success"></div>
+    <div class="failure"></div>
+    <div class="complete"></div>
+    <div class="interactive"></div>
+    <div class="loaded"></div>
+    <div class="loading"></div>
+</form>
+
+<form id="test_update_response_code" target="/foo" method="post" data-js-type="remote"
+      data-404-update="#test_success_update_response_code .response_404"
+      data-302-update="#test_success_update_response_code .response_302">
+
+    <input type="input" name="foo[name]" value="Name" />
+    <select name="foo[state]">
+        <option value="AK" />
+        <option value="CA" />
+    </select>
+    <input type="radio" name="foo[sex]" value="Male" /> Male
+    <input type="radio" name="foo[sex]" value="Female" /> Female
+
+    <input type="checkbox" name="foo[food]" value="Beer" />
+    <input type="checkbox" name="foo[food]" value="Junk" />
+    <input type="checkbox" name="foo[food]" value="Health" />
+
+    <input type="button" name="foo[button]" value="my_button">
+    <input type="submit" name="foo[submit]" value="submit">
+
+    <div class="response_404"></div>
+    <div class="response_302"></div>
+</form>
+
+<form id="test_callback" target="/foo" method="post" data-js-type="remote"
+      data-success-code="function(request) {}"
+      data-failure-code="function(request) {}"
+      data-complete-code="function(request) {}"
+      data-interactive-code="function(request) {}"
+      data-loaded-code="function(request) {}"
+      data-loading-code="function(request) {}">
+
+    <input type="input" name="foo[name]" value="Name" />
+    <select name="foo[state]">
+        <option value="AK" />
+        <option value="CA" />
+    </select>
+    <input type="radio" name="foo[sex]" value="Male" /> Male
+    <input type="radio" name="foo[sex]" value="Female" /> Female
+
+    <input type="checkbox" name="foo[food]" value="Beer" />
+    <input type="checkbox" name="foo[food]" value="Junk" />
+    <input type="checkbox" name="foo[food]" value="Health" />
+
+    <input type="button" name="foo[button]" value="my_button">
+    <input type="submit" name="foo[submit]" value="submit">
 </form>
 
 </body>
