@@ -42,16 +42,15 @@ dojo.provide("dojox.rails._base.parser");
 				className = dr.camelize(dr.camelize(jsType + "_" + tag));
 			}
 
-      var module = "dojox.rails." + className;
+      var module = "dojox.rails.decorators." + className;
       d.require(module);
-      dr.manager.register(jsType, new dr[className](node));
+      dr.manager.register(jsType, new dr.decorators[className](node));
 		});
 	}
 	
 	if (d.config.parseOnLoad) {
 		d.addOnLoad(function() {
-			var parsedNodes = dr.parse();
-			dr.delegate(parsedNodes);
+			dr.parse();
 		});
 	}
 })();

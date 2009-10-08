@@ -49,13 +49,13 @@
 					var remotes = dojox.rails.manager.findByType("remote");
 					t.is(1, remotes.length);
 					dojo.forEach(remotes, function(obj) {
-						t.is(dojox.rails.RemoteForm.prototype.constructor, obj.constructor);
+						t.is(dojox.rails.decorators.RemoteForm.prototype.constructor, obj.constructor);
 					});
 					
 					var fieldObservers = dojox.rails.manager.findByType("field_observer");
 					t.is(1, fieldObservers.length);
 					dojo.forEach(fieldObservers, function(obj) {
-						t.is(dojox.rails.FieldObserver.prototype.constructor, obj.constructor);
+						t.is(dojox.rails.decorators.FieldObserver.prototype.constructor, obj.constructor);
 					});
 				}
 			}
