@@ -1,6 +1,4 @@
 dojo.provide("dojox.rails._base.parser");
-dojo.require("dojox.rails.RemoteForm");
-dojo.require("dojox.rails.FieldObserver");
 
 (function() {
 	var dr = dojox.rails;
@@ -16,11 +14,15 @@ dojo.require("dojox.rails.FieldObserver");
 		
 		all: function(){
 			var all = [];
-			for (var type in this._map){
-				all.concat(this._map[type]);
+      for (var type in this._map){
+				all = all.concat(this._map[type]);
 			}
 			return all;
 		},
+
+    clear: function(){
+      this._map = {};
+    },
 		
 		findByType: function(type){
 			return this._map[type] || [];
@@ -28,20 +30,21 @@ dojo.require("dojox.rails.FieldObserver");
 	}
 	
 	dr.parse = function(){
-		var remotes = d.query("*[data-js-type='remote']");
-		var fieldObservers = d.query("*[data-js-type='observe_field']");
-		return remotes.concat(fieldObservers);
-	}
-	
-	dr.delegate = function(nodes){
-		d.forEach(nodes, function(node){
-			if (d.attr(node, "data-js-type") == "remote"){
-				if (node.tagName.toLowerCase() == "form") {
-					dr.manager.register("remote", new dr.RemoteForm(node));
-				}
-			} else if (d.attr(node, "data-js-type") == "observe_field") {
-				dr.manager.register("observe_field", new dr.FieldObserver(node));
+		var nodes = d.query("*[data-js-type]");
+    d.forEach(nodes, function(node){
+      var tag = node.tagName.toLowerCase();
+      var jsType = dojo.attr(node, "data-js-type");
+
+      var className;
+      if (tag == "script"){
+        className = dr.camelize(jsType);
+			} else {
+				className = dr.camelize(dr.camelize(jsType + "_" + tag));
 			}
+
+      var module = "dojox.rails." + className;
+      d.require(module);
+      dr.manager.register(jsType, new dr[className](node));
 		});
 	}
 	

@@ -11,27 +11,48 @@
 		var parsedNodes;	
 		
 		doh.register("dojox.rails.tests.Parser", [
-			{
-				name: "parse",
-				runTest: function(t) {
-					t.is(2, dojox.rails.parse().length);
-				}
+            {
+				name: "manager",
+                tearDown: function() {
+                  dojox.rails.manager.clear();  
+                },
+                runTest: function(t) {
+                    t.is([], dojox.rails.manager.findByType());
+
+                    dojox.rails.manager.register("x", "y");
+                    t.is(["y"], dojox.rails.manager.findByType("x"));
+
+                    dojox.rails.manager.register("foo", "bar");
+                    var all = dojox.rails.manager.all();
+                    t.is(2, all.length);
+
+                    var found = false;
+                    dojo.forEach(all, function(item) { if (item == "y") found = true });
+                    t.t(found);
+
+                    var found = false;
+                    dojo.forEach(all, function(item) { if (item == "bar") found = true });
+                    t.t(found);
+                }
 			},
 			{
-				name: "delegate",
-				setUp: function() {
-					parsedNodes = dojox.rails.parse();
-				},
+				name: "parse",
+                tearDown: function() {
+                  dojox.rails.manager.clear();
+                },
 				runTest: function(t) {
-					dojox.rails.delegate(parsedNodes);
-					
+					dojox.rails.parse();
+                    t.is(2, dojox.rails.manager.all().length);
+
+                    console.debug(dojox.rails.manager);
+                    
 					var remotes = dojox.rails.manager.findByType("remote");
 					t.is(1, remotes.length);
 					dojo.forEach(remotes, function(obj) {
 						t.is(dojox.rails.RemoteForm.prototype.constructor, obj.constructor);
 					});
 					
-					var fieldObservers = dojox.rails.manager.findByType("observe_field");
+					var fieldObservers = dojox.rails.manager.findByType("field_observer");
 					t.is(1, fieldObservers.length);
 					dojo.forEach(fieldObservers, function(obj) {
 						t.is(dojox.rails.FieldObserver.prototype.constructor, obj.constructor);
@@ -50,7 +71,7 @@
 <form id="form-remote" method="post" data-js-type="remote">
 </form>
 
-<script type="application/json" data-js-type="observe_field">
+<script type="application/json" data-js-type="field_observer">
 // <![CDATA[
 	{ "url": "/some/url" }
 // ]]>
