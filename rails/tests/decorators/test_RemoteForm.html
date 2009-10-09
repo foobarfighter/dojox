@@ -10,21 +10,16 @@
 		
 		doh.register("dojox.rails.tests.decorators.RemoteForm", [
 			{
-				name: "Base",
-				setUp: function() {
-                    console.debug("setUp");
-				},
-				tearDown: function() {
-					console.debug("tearDown");
-				},
+				name: "domNode",
 				runTest: function(t) {
-					t.t(true);
+                    var decorator = dojox.rails.manager.byNode("test_base");
+                    t.is(dojo.byId("test_base"), decorator.domNode);
 				}
 			}
 		]);
 
         dojo.addOnLoad(function() {
-//            dojox.parser.parse();
+            dojox.rails.parse();
             doh.run();
         });
 	</script>
