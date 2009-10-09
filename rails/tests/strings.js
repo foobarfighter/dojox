@@ -8,6 +8,8 @@ doh.register("dojox.rails.tests.strings",
 			runTest: function(t) {
 				doh.is("UnderScoreString", dojox.rails.camelize("__under_score__string"));
 				doh.is("underScoreString", dojox.rails.camelize("under_score__string", false));
+				doh.is("underScoreString", dojox.rails.camelize("under_score_string", false));
+				doh.is("UnderScoreString", dojox.rails.camelize("under_score_string"));
 			}
 		}
 	]

@@ -35,6 +35,28 @@
                     t.t(found);
                 }
 			},
+            {
+                name: "manager.byNode",
+                setUp: function(){
+                    dojox.rails.parse();
+                },
+                tearDown: function(){
+                    dojox.rails.manager.clear();
+                },
+                runTest: function(t){
+                    var decorator = dojox.rails.manager.byNode(dojo.byId("form-remote"));
+                    t.is(dojo.byId("form-remote"), decorator.domNode);
+
+                    var decorator = dojox.rails.manager.byNode("form-remote");
+                    t.is(dojo.byId("form-remote"), decorator.domNode);
+
+                    var decorator = dojox.rails.manager.byNode("node-does-NOT-exist");
+                    t.is(null, decorator);
+
+                    var decorator = dojox.rails.manager.byNode("node-that-exists-but-is-not-a-decorator");
+                    t.is(null, decorator);
+                }
+            },
 			{
 				name: "parse",
                 tearDown: function() {
@@ -77,6 +99,7 @@
 // ]]>
 </script>
 
+<div id="node-that-exists-but-is-not-a-decorator"></div>
 
 </body>
 </html>

@@ -20,6 +20,18 @@ dojo.provide("dojox.rails._base.parser");
 			return all;
 		},
 
+    byNode: function(node){
+      node = dojo.byId(node);
+      if (!node) { return null }
+
+      var decorators = this.findByType(dojo.attr(node, "data-js-type"));
+      for (var i=0; i<decorators.length; i++){
+        var decorator = decorators[i];
+        if (node == decorator.domNode){ return decorator }
+      }
+      return null;
+    },
+
     clear: function(){
       this._map = {};
     },
