@@ -8,8 +8,30 @@
 		dojo.require("doh.runner");
 		dojo.require("dojox.rails");
 
-        doh.register("dojox.rails.tests.decorators.RemoteForm", [
+        doh.register("dojox.rails.tests.decorators.Request", [
+            {
+                name: "Base",
+                runTest: function(t) {
+                    dojox.rails.parse();
+                    var request = dojox.rails.manager.byNode("request-with-functions");
+                    t.t(request != null);
+
+                    t.is(loadCb, request._cb['load']);
+                    t.is(errorCb, request._cb['error']);
+                    
+                    try {
+                        request._cb['loaded']();
+                        t.t(false);
+                    }catch(e){
+                        var expectedError = e.message.match("unsupported operation") != null;
+                        t.t(expectedError);
+                    }
+                }
+            }
         ]);
+
+        function loadCb(request) {}
+        function errorCb(request) {}
 
         dojo.addOnLoad(function() {
             doh.run();
@@ -19,8 +41,8 @@
 <body>
 
 <script type="javascript/json" id="request-with-functions" data-js-type="request"
-      data-success-code="function(request) {}"
-      data-failure-code="function(request) {}"
+      data-success-code="loadCb"
+      data-failure-code="errorCb"
       data-complete-code="function(request) {}"
       data-interactive-code="function(request) {}"
       data-loaded-code="function(request) {}"
