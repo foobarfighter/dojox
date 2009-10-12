@@ -4,30 +4,62 @@ dojo.require("dojox.rails.decorators.Base");
 dojo.declare("dojox.rails.decorators.Request",
   dojox.rails.decorators.Base, {
 
-  _cb: [],
+  _connects: [],
+  _method: "GET",
 
 	constructor: function(node) {
-    this.initializeCodeHandlers();
+    this._initializeMethod();
+    this._initializeCodeHandlers();
 	},
 
-  initializeCodeHandlers: function() {
+  getMethod: function() {
+    return this._method;
+  },
+
+  exec: function(){
+  },
+
+  onSuccess: function(request, ioArgs){
+  },
+
+  onError: function(request, ioArgs){
+  },
+
+  onComplete: function(request, ioArgs){
+  },
+
+  onInteractive: function(request, ioArgs){
+  },
+
+  onLoaded: function(request, ioArgs){
+  },
+
+  onLoading: function(request, ioArgs){
+  },
+
+  _initializeMethod: function() {
+    var m = dojo.attr(this.domNode, "data-method") || dojo.attr(this.domNode, "method");
+    if (m){this._method = m.toUpperCase()}
+  },
+
+  _initializeCodeHandlers: function() {
     var attrs = this.domNode.attributes;
     for(var i=0; i<attrs.length; i++){
       if (!attrs[i]) continue;
 
       var matches = attrs[i].name.match(/data-(.*)-code/);
       if (matches && matches.length > 1) {
-        this._map(matches[1], dojo.attr(this.domNode, attrs[i].name));
+        this._mapAndConnect(matches[1], dojo.attr(this.domNode, attrs[i].name));
       }
     }
   },
 
-  _map: function(cbName, cbValue) {
-    var mappedCallback = dojox.rails.decorators.Request._cbMap[cbName];
+  _mapAndConnect: function(cbName, cbCode) {
+    var mappedCallback = dojox.rails.decorators.Request._CallbackMap[cbName];
     if (mappedCallback){
-      this._cb[mappedCallback] = this._evalCallback(cbValue);
-    } else {
-      this._cb[cbName] = this._createUnsupportedOperation(cbName);
+      this._connects.push(dojo.connect(this, mappedCallback, this._evalCallback(cbCode)));
+    }else{
+      this._throwUnsupportedCallbackError(cbName);
     }
   },
 
@@ -35,14 +67,16 @@ dojo.declare("dojox.rails.decorators.Request",
     return eval("(" + value + ")");
   },
 
-  _createUnsupportedOperation: function(cbName) {
-    return function() {
-      throw new Error(cbName + " is an unsupported operation");
-    }
+  _throwUnsupportedCallbackError: function(cbName) {
+    throw new Error("'" + cbName + "' is an unsupported callback");
   }
 });
 
-dojox.rails.decorators.Request._cbMap = {
-  success: "load",
-  failure: "error"
+dojox.rails.decorators.Request._CallbackMap = {
+  success:      "onSuccess",
+  failure:      "onError",
+  complete:     "onComplete",
+  interactive:  "onInteractive",
+  loaded:       "onLoaded",
+  loading:      "onLoading"
 }

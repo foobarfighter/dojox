@@ -10,22 +10,49 @@
 
         doh.register("dojox.rails.tests.decorators.Request", [
             {
-                name: "Base",
-                runTest: function(t) {
+                name: "Callback parsing",
+                setUp: function() {
                     dojox.rails.parse();
-                    var request = dojox.rails.manager.byNode("request-with-functions");
-                    t.t(request != null);
+                },
+                tearDown: function() {
+                    dojox.rails.manager.clear();
+                },
+                runTest: function(t) {
+                    var request = dojox.rails.manager.byNode("test_successful_callback_parse");
 
-                    t.is(loadCb, request._cb['load']);
-                    t.is(errorCb, request._cb['error']);
-                    
-                    try {
-                        request._cb['loaded']();
-                        t.t(false);
-                    }catch(e){
-                        var expectedError = e.message.match("unsupported operation") != null;
-                        t.t(expectedError);
+                    var assertCallbackConnection = function(cbName){
+                        var cbMapping = "on" + dojox.rails.camelize(cbName);
+                        var found = false;
+                        dojo.forEach(request._connects, function(connect){
+                            if (connect[0] == request && connect[1] == cbMapping){ found = true }
+                        });
+                        t.t(found, "'" + cbName + "' callback was not connected");
                     }
+
+                    var expectedMappedCallbacks = ["complete", "interactive", "loaded", "loading"];
+                    dojo.forEach(expectedMappedCallbacks, assertCallbackConnection);
+
+                    try{
+                        new dojox.rails.decorators.Request("test_unsupported_callback_parse");
+                        t.t(false, "Request decorator should not have been instantiated with an unsupported callback");
+                    }catch(e){
+                        t.is("'unsupported' is an unsupported callback", e.message);
+                    }
+                }
+            },
+            {
+                name: "Request method parsing",
+                setUp: function() {
+                    dojox.rails.parse();
+                },
+                tearDown: function() {
+                    dojox.rails.manager.clear();
+                },
+                runTest: function(t) {
+                    t.is("GET", dojox.rails.manager.byNode("test_method_default").getMethod());
+                    t.is("PUT", dojox.rails.manager.byNode("test_method_with_data_attribute").getMethod());
+                    t.is("POST", dojox.rails.manager.byNode("test_method_with_method_attribute").getMethod());
+                    t.is("DELETE", dojox.rails.manager.byNode("test_method_with_data_and_method_attribute").getMethod());
                 }
             }
         ]);
@@ -40,7 +67,7 @@
 </head>
 <body>
 
-<script type="javascript/json" id="request-with-functions" data-js-type="request"
+<script type="javascript/json" id="test_successful_callback_parse" data-js-type="request"
       data-success-code="loadCb"
       data-failure-code="errorCb"
       data-complete-code="function(request) {}"
@@ -48,6 +75,14 @@
       data-loaded-code="function(request) {}"
       data-loading-code="function(request) {}">
 </script>
+
+<!-- Intentionally not including data-js-type="request" to avoid parse -->
+<script type="javascript/json" id="test_unsupported_callback_parse" data-unsupported-code="function() {}"></script>
+
+<script type="text/json" id="test_method_default" data-js-type="request"></script>
+<script type="text/json" id="test_method_with_data_attribute" data-js-type="request" data-method="put"></script>
+<script type="text/json" id="test_method_with_method_attribute" data-js-type="request" method="post"></script>
+<script type="text/json" id="test_method_with_data_and_method_attribute" data-js-type="request" method="put" data-method="delete"></script>
 
 </body>
 </html>

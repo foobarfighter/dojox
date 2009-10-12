@@ -4,6 +4,6 @@ dojo.declare("dojox.rails.decorators.Base", null, {
   domNode: null,
 
 	constructor: function(node) {
-		this.domNode = node;
+		this.domNode = dojo.byId(node);
 	}
 });
