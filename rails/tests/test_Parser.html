@@ -44,16 +44,16 @@
                     dojox.rails.manager.clear();
                 },
                 runTest: function(t){
-                    var decorator = dojox.rails.manager.byNode(dojo.byId("form-remote"));
-                    t.is(dojo.byId("form-remote"), decorator.domNode);
+                    var decorator = dojox.rails.manager.byNode(dojo.byId("form_remote"));
+                    t.is(dojo.byId("form_remote"), decorator.domNode);
 
-                    var decorator = dojox.rails.manager.byNode("form-remote");
-                    t.is(dojo.byId("form-remote"), decorator.domNode);
+                    var decorator = dojox.rails.manager.byNode("form_remote");
+                    t.is(dojo.byId("form_remote"), decorator.domNode);
 
-                    var decorator = dojox.rails.manager.byNode("node-does-NOT-exist");
+                    var decorator = dojox.rails.manager.byNode("node_does_NOT_exist");
                     t.is(null, decorator);
 
-                    var decorator = dojox.rails.manager.byNode("node-that-exists-but-is-not-a-decorator");
+                    var decorator = dojox.rails.manager.byNode("node_that_exists_but_is_not_a_decorator");
                     t.is(null, decorator);
                 }
             },
@@ -90,7 +90,7 @@
 </head>
 <body>
 
-<form id="form-remote" method="post" data-js-type="remote">
+<form id="form_remote" method="post" data-js-type="remote">
 </form>
 
 <script type="application/json" data-js-type="field_observer">
@@ -99,7 +99,7 @@
 // ]]>
 </script>
 
-<div id="node-that-exists-but-is-not-a-decorator"></div>
+<div id="node_that_exists_but_is_not_a_decorator"></div>
 
 </body>
 </html>
