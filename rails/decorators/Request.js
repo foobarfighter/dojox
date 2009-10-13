@@ -22,7 +22,7 @@ dojo.declare("dojox.rails.decorators.Request",
   onSuccess: function(request, ioArgs){
   },
 
-  onError: function(request, ioArgs){
+  onFailure: function(request, ioArgs){
   },
 
   onComplete: function(request, ioArgs){
@@ -57,7 +57,7 @@ dojo.declare("dojox.rails.decorators.Request",
   _mapAndConnect: function(cbName, cbCode) {
     var mappedCallback = dojox.rails.decorators.Request._CallbackMap[cbName];
     if (mappedCallback){
-      this._connects.push(dojo.connect(this, mappedCallback, this._evalCallback(cbCode)));
+      this._connects.push(dojo.connect(this, mappedCallback, null, this._evalCallback(cbCode)));
     }else{
       this._throwUnsupportedCallbackError(cbName);
     }
@@ -74,7 +74,7 @@ dojo.declare("dojox.rails.decorators.Request",
 
 dojox.rails.decorators.Request._CallbackMap = {
   success:      "onSuccess",
-  failure:      "onError",
+  failure:      "onFailure",
   complete:     "onComplete",
   interactive:  "onInteractive",
   loaded:       "onLoaded",

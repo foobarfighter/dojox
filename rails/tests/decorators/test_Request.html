@@ -7,6 +7,33 @@
 	<script type="text/javascript">
 		dojo.require("doh.runner");
 		dojo.require("dojox.rails");
+		dojo.require("dojox.rails.decorators.Request");
+
+        var request = null;
+
+        // FIXME: remove dojo.connect.  This function is broken... kinda.  dojo.connect does not behave how I thought it did.
+        function mock(connectScope, func){
+            var scope = scope || dojo.global;
+
+            if (!scope[func].__mockHint) { scope[func].__mockHint = (scope.declaredClass || scope) + ": " + func }
+            dojo.connect(connectScope, func, null, function() {
+                if (!scope[func].__mockCalled) { scope[func].__mockCalled = 0 }
+
+                scope[func].__mockCalled++;
+            });
+        }
+
+        function assertMockCalled(t, mockedFunc, times) {
+            var failPrefix = mockedFunc.__mockHint + ": ";
+            var called = mockedFunc.__mockCalled;
+            if (times == 0){
+                t.t(called == null, failPrefix + ": was called " + called + " times but should not have been called");
+            }else{
+                times = times || 1;
+                t.t(called != null, failPrefix + ": was not called");
+                t.is(called, times, failPrefix + ": expected to be called " + times + " times but was called " + called + " times");
+            }
+        }
 
         doh.register("dojox.rails.tests.decorators.Request", [
             {
@@ -54,11 +81,54 @@
                     t.is("POST", dojox.rails.manager.byNode("test_method_with_method_attribute").getMethod());
                     t.is("DELETE", dojox.rails.manager.byNode("test_method_with_data_and_method_attribute").getMethod());
                 }
+            },
+            {
+                name: "Request callback execution",
+                setUp: function() {
+                    // FIXME: mocking here is broken
+                    mock(null, "execSuccessCallback");
+                    mock(null, "execFailureCallback");
+                    mock(null, "execCompleteCallback");
+                    mock(null, "execInteractiveCallback");
+                    mock(null, "execLoadedCallback");
+                    mock(null, "execLoadingCallback");
+
+                    request = new dojox.rails.decorators.Request("test_callback_execution");
+                },
+                tearDown: function() {
+                    request = null;
+                },
+                runTest: function(t) {
+                    request.onSuccess();
+                    assertMockCalled(t, dojo.global.execSuccessCallback);
+
+                    request.onFailure();
+                    assertMockCalled(t, dojo.global.execFailureCallback);
+
+                    request.onComplete();
+                    assertMockCalled(t, dojo.global.execCompleteCallback);
+
+                    request.onInteractive();
+                    assertMockCalled(t, dojo.global.execInteractiveCallback);
+
+                    request.onLoaded();
+                    assertMockCalled(t, dojo.global.execLoadedCallback);
+
+                    request.onLoading();
+                    assertMockCalled(t, dojo.global.execLoadingCallback);
+                }
             }
         ]);
 
         function loadCb(request) {}
         function errorCb(request) {}
+
+        function execSuccessCallback() {}
+        function execFailureCallback() {}
+        function execCompleteCallback() {}
+        function execInteractiveCallback() {}
+        function execLoadedCallback() {}
+        function execLoadingCallback() {}
 
         dojo.addOnLoad(function() {
             doh.run();
@@ -83,6 +153,15 @@
 <script type="text/json" id="test_method_with_data_attribute" data-js-type="request" data-method="put"></script>
 <script type="text/json" id="test_method_with_method_attribute" data-js-type="request" method="post"></script>
 <script type="text/json" id="test_method_with_data_and_method_attribute" data-js-type="request" method="put" data-method="delete"></script>
+
+<script type="text/json" id="test_callback_execution" data-js-type="request" method="post"
+      data-success-code="execSuccessCallback"
+      data-failure-code="execFailureCallback"
+      data-complete-code="execCompleteCallback"
+      data-interactive-code="execInteractiveCallback"
+      data-loaded-code="execLoadedCallback"
+      data-loading-code="execLoadingCallback">
+</script>
 
 </body>
 </html>
