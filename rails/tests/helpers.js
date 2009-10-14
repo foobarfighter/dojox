@@ -3,22 +3,24 @@ dojo.provide("dojox.rails.tests.helpers");
 // FIXME: This doesn't really work right after a connect; Even if it did, it doesn't take into account scope+func calls
 // The function can be called from within multiple scopes and it the count will increase with each call eventhough it
 // should only increase with each scope+func pairing.
-doh.mock = function(/*Object|null*/ scope, /*String*/func){
+doh.mock = function(/*Object|null*/ scope, /*String*/func, /*Function?*/ stub){
   scope = scope || dojo.global;
   var hint = (scope.declaredClass || scope) + ": " + func;
-  var orig = dojo.hitch(scope, scope[func]);
+  var replaceFunc = stub || dojo.hitch(scope, scope[func]);
 
   scope[func] = (function(f) {
     return function(){
       if (!scope[func].__mockCalled){ scope[func].__mockCalled = 0 }
       scope[func].__mockCalled++;
+      scope[func].__mockArgs = arguments;
       return f.apply(scope, arguments || []);
     }
-  })(orig);
+  })(replaceFunc);
 
   scope[func].__mockHint = hint;
 }
 
+// TODO: Reset mock on assert
 doh.assertMock = function(/*Function*/ mockedFunc, /*Number*/ times) {
   var failPrefix = mockedFunc.__mockHint + ": ";
   var called = mockedFunc.__mockCalled;

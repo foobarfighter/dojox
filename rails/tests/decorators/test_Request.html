@@ -11,7 +11,6 @@
 		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.Request");
 
-        var request = null;
         var drd = dojox.rails.decorators;
 
         doh.register("dojox.rails.tests.decorators.Request", [
@@ -89,7 +88,7 @@
                     t.mock(null, "execLoadedCallback");
                     t.mock(null, "execLoadingCallback");
 
-                    request = new drd.Request("test_callback_execution");
+                    var request = new drd.Request("test_callback_execution");
 
                     request.onSuccess();
                     t.assertMock(execSuccessCallback);
@@ -113,7 +112,32 @@
             {
                 name: "exec",
                 runTest: function(t){
+                    var request = new drd.Request("test_callback_execution");
+                    request.setMethod("get");
+                    t.mock(dojo, "xhrGet", function(){});
+                    request.exec("/someurl");
+                    t.assertMock(dojo.xhrGet);
 
+                    request.setMethod("post");
+                    t.mock(dojo, "xhrPost", function(){});
+                    request.exec("/someurl");
+                    t.assertMock(dojo.xhrPost);
+
+                    request.setMethod("delete");
+                    t.mock(dojo, "xhrDelete", function(){});
+                    request.exec("/someurl");
+                    t.assertMock(dojo.xhrDelete);
+
+                    request.setMethod("put");
+                    t.mock(dojo, "xhrPut", function(){});
+                    request.exec("/someurl");
+                    t.assertMock(dojo.xhrPut);
+
+                    request.setMethod("trace");
+                    t.mock(dojo, "xhr", function(){});
+                    request.exec("/someurl");
+                    t.assertMock(dojo.xhr);
+                    t.is("trace", dojo.xhr.__mockArgs[0]);
                 }
             }
         ]);

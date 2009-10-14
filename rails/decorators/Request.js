@@ -26,7 +26,14 @@ dojo.declare("dojox.rails.decorators.Request",
     return this._method;
   },
 
+  setMethod: function(method){
+    this._method = method.toLowerCase();
+  },
+
   exec: function(url, /*Object?*/ xhrArgs) {
+    xhrArgs = xhrArgs || {};
+    if (url){ xhrArgs.url = url }
+
     var dojoArgs = this._mapToDojo(xhrArgs);
     var xhrMethod = dojo["xhr" + dojox.rails.camelize(this.getMethod(), true)];
     if (xhrMethod){
@@ -37,7 +44,7 @@ dojo.declare("dojox.rails.decorators.Request",
   },
 
   _mapToDojo: function(xhrArgs){
-    var dojoArgs = {}, drd = dojox.rails.decorators;
+    var dojoArgs = xhrArgs, drd = dojox.rails.decorators;
     dojo.mixin(dojoArgs, drd._XhrArgMap.map(this._args));
     dojo.mixin(dojoArgs, drd._XhrCallbackMap.map(this));
     dojo.mixin(dojoArgs, xhrArgs);
