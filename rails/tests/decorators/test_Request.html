@@ -6,35 +6,13 @@
 	    djConfig="isDebug: true"></script>
 	<script type="text/javascript">
 		dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");
+
 		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.Request");
 
         var request = null;
         var drd = dojox.rails.decorators;
-
-        // FIXME: remove dojo.connect.  This function is broken... kinda.  dojo.connect does not behave how I thought it did.
-        function mock(connectScope, func){
-            var scope = scope || dojo.global;
-
-            if (!scope[func].__mockHint) { scope[func].__mockHint = (scope.declaredClass || scope) + ": " + func }
-            dojo.connect(connectScope, func, null, function() {
-                if (!scope[func].__mockCalled) { scope[func].__mockCalled = 0 }
-
-                scope[func].__mockCalled++;
-            });
-        }
-
-        function assertMockCalled(t, mockedFunc, times) {
-            var failPrefix = mockedFunc.__mockHint + ": ";
-            var called = mockedFunc.__mockCalled;
-            if (times == 0){
-                t.t(called == null, failPrefix + ": was called " + called + " times but should not have been called");
-            }else{
-                times = times || 1;
-                t.t(called != null, failPrefix + ": was not called");
-                t.is(called, times, failPrefix + ": expected to be called " + times + " times but was called " + called + " times");
-            }
-        }
 
         doh.register("dojox.rails.tests.decorators.Request", [
             {
@@ -73,44 +51,69 @@
             },
             {
                 name: "Request argument parsing",
+                runTest: function(t){
+                    var request = new drd.Request("test_args_parse");
+                    t.is("/some/url", request._args.url);
+                    t.is("bottom", request._args.insertion);
+                    t.is("a=b&c=d", request._args.params);
+                    t.is("true", request._args.eval);
+                    t.is("true", request._args.sync);
+                }
+            },
+            {
+                name: "Request argument mapping",
                 runTest: function(t) {
+                    var request = new drd.Request("test_args_parse");
+                    var mappedArgs = request._mapToDojo({ 'foo': 'bar' });
 
+                    t.is("/some/url", mappedArgs.url);
+                    t.is("last", mappedArgs.place);
+                    t.is({ a: 'b', c: 'd' }, mappedArgs.content);
+                    t.is(true, mappedArgs.evalScripts);
+                    t.is(true, mappedArgs.sync);
+
+                    t.is(request.onSuccess, mappedArgs.load);
+                    t.is(request.onFailure, mappedArgs.error);
+                    t.is(request.onComplete, mappedArgs.handle);
+
+                    t.is("bar", mappedArgs.foo);
                 }
             },
             {
                 name: "Request callback execution",
-                setUp: function() {
-                    // FIXME: mocking here is broken
-                    mock(null, "execSuccessCallback");
-                    mock(null, "execFailureCallback");
-                    mock(null, "execCompleteCallback");
-                    mock(null, "execInteractiveCallback");
-                    mock(null, "execLoadedCallback");
-                    mock(null, "execLoadingCallback");
+                runTest: function(t) {
+                    t.mock(null, "execSuccessCallback");
+                    t.mock(null, "execFailureCallback");
+                    t.mock(null, "execCompleteCallback");
+                    t.mock(null, "execInteractiveCallback");
+                    t.mock(null, "execLoadedCallback");
+                    t.mock(null, "execLoadingCallback");
 
                     request = new drd.Request("test_callback_execution");
-                },
-                tearDown: function() {
-                    request = null;
-                },
-                runTest: function(t) {
+
                     request.onSuccess();
-                    assertMockCalled(t, dojo.global.execSuccessCallback);
+                    t.assertMock(execSuccessCallback);
 
                     request.onFailure();
-                    assertMockCalled(t, dojo.global.execFailureCallback);
+                    t.assertMock(execFailureCallback);
 
                     request.onComplete();
-                    assertMockCalled(t, dojo.global.execCompleteCallback);
+                    t.assertMock(execCompleteCallback);
 
                     request.onInteractive();
-                    assertMockCalled(t, dojo.global.execInteractiveCallback);
+                    t.assertMock(execInteractiveCallback);
 
                     request.onLoaded();
-                    assertMockCalled(t, dojo.global.execLoadedCallback);
+                    t.assertMock(execLoadedCallback);
 
                     request.onLoading();
-                    assertMockCalled(t, dojo.global.execLoadingCallback);
+                    t.assertMock(execLoadingCallback);
+                }
+            },
+            {
+                name: "exec",
+                runTest: function(t){
+
                 }
             }
         ]);

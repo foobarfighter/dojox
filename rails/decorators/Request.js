@@ -37,13 +37,18 @@ dojo.declare("dojox.rails.decorators.Request",
   },
 
   _mapToDojo: function(xhrArgs){
-    return {};
+    var dojoArgs = {}, drd = dojox.rails.decorators;
+    dojo.mixin(dojoArgs, drd._XhrArgMap.map(this._args));
+    dojo.mixin(dojoArgs, drd._XhrCallbackMap.map(this));
+    dojo.mixin(dojoArgs, xhrArgs);
+    return dojoArgs;
   },
 
   _parseArgs: function() {
-    var keys = dojox.rails.decorators._XhrArgMap.getMappingsKeys
+    var keys = dojox.rails.decorators._XhrArgMap.getMappingKeys();
     dojo.forEach(keys, function(key){
-      this._args[key] = dojo.attr(this.domNode, "data-" + key);
+      var v = dojo.attr(this.domNode, "data-" + key);
+      if (v){this._args[key] = v}
     }, this);
   },
 

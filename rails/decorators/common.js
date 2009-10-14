@@ -46,7 +46,7 @@ dojo.declare("dojox.rails.decorators.ArgMap", null, {
 (function() {
   var drd = dojox.rails.decorators;
 
-  drd._XhrCallbackMap = drd.ArgMap({
+  drd._XhrCallbackMap = new drd.ArgMap({
     "onUninitialized":	null,
     "onLoading":				null,
     "onLoaded":					null,
@@ -64,12 +64,14 @@ dojo.declare("dojox.rails.decorators.ArgMap", null, {
     "after":	 "after"
   };
 
-  drd._XhrArgMap = drd.ArgMap({
-    "sync":       "sync",
+  var parseTrueFalse = function(v) { return v == "true" || v == true };
+
+  drd._XhrArgMap = new drd.ArgMap({
+    "url":        "url",
+    "sync":       parseTrueFalse,
     "method":	    function(v) { return v.toLowerCase(); },
     "insertion":	[ "place", function(v) { return insertionMap[v] }],
     "params":		  [ "content", function(v) { return dojo.isObject(v) ? v : dojo.queryToObject(v); } ],
-    "eval":	      "evalScripts"
+    "eval":	      ["evalScripts", parseTrueFalse]
   });
 })();
-

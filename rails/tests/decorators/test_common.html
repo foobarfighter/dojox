@@ -6,20 +6,13 @@
             djConfig="isDebug: true, parseOnLoad: true"></script>
     <script type="text/javascript">
         dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");
+        
         dojo.require("dojox.rails");
         dojo.require("dojox.rails.decorators.common");
 
         var drd = dojox.rails.decorators;
-        doh.assertContains = function(value, array){
-            var found = false;
-            for(var i=0; i<array.length; i++){
-                if (value == array[i]){
-                    found = true;
-                    break;
-                }
-            }
-            if (!found){throw new doh._AssertFailure("[" + array + "] does not contain '" + value + "'")}
-        }
+
 
         doh.register("dojox.rails.tests.decorators.common", [
             {
