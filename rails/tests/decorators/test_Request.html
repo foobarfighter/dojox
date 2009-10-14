@@ -10,6 +10,7 @@
 		dojo.require("dojox.rails.decorators.Request");
 
         var request = null;
+        var drd = dojox.rails.decorators;
 
         // FIXME: remove dojo.connect.  This function is broken... kinda.  dojo.connect does not behave how I thought it did.
         function mock(connectScope, func){
@@ -38,14 +39,8 @@
         doh.register("dojox.rails.tests.decorators.Request", [
             {
                 name: "Callback parsing",
-                setUp: function() {
-                    dojox.rails.parse();
-                },
-                tearDown: function() {
-                    dojox.rails.manager.clear();
-                },
                 runTest: function(t) {
-                    var request = dojox.rails.manager.byNode("test_successful_callback_parse");
+                    var request = new drd.Request("test_successful_callback_parse");
 
                     var assertCallbackConnection = function(cbName){
                         var cbMapping = "on" + dojox.rails.camelize(cbName);
@@ -60,7 +55,7 @@
                     dojo.forEach(expectedMappedCallbacks, assertCallbackConnection);
 
                     try{
-                        new dojox.rails.decorators.Request("test_unsupported_callback_parse");
+                        new drd.Request("test_unsupported_callback_parse");
                         t.t(false, "Request decorator should not have been instantiated with an unsupported callback");
                     }catch(e){
                         t.is("'unsupported' is an unsupported callback", e.message);
@@ -69,17 +64,17 @@
             },
             {
                 name: "Request method parsing",
-                setUp: function() {
-                    dojox.rails.parse();
-                },
-                tearDown: function() {
-                    dojox.rails.manager.clear();
-                },
                 runTest: function(t) {
-                    t.is("GET", dojox.rails.manager.byNode("test_method_default").getMethod());
-                    t.is("PUT", dojox.rails.manager.byNode("test_method_with_data_attribute").getMethod());
-                    t.is("POST", dojox.rails.manager.byNode("test_method_with_method_attribute").getMethod());
-                    t.is("DELETE", dojox.rails.manager.byNode("test_method_with_data_and_method_attribute").getMethod());
+                    t.is("get", (new drd.Request("test_method_default")).getMethod());
+                    t.is("put", (new drd.Request("test_method_with_data_attribute")).getMethod());
+                    t.is("post", (new drd.Request("test_method_with_method_attribute")).getMethod());
+                    t.is("delete", (new drd.Request("test_method_with_data_and_method_attribute")).getMethod());
+                }
+            },
+            {
+                name: "Request argument parsing",
+                runTest: function(t) {
+
                 }
             },
             {
@@ -93,7 +88,7 @@
                     mock(null, "execLoadedCallback");
                     mock(null, "execLoadingCallback");
 
-                    request = new dojox.rails.decorators.Request("test_callback_execution");
+                    request = new drd.Request("test_callback_execution");
                 },
                 tearDown: function() {
                     request = null;
@@ -137,6 +132,7 @@
 </head>
 <body>
 
+<!-- Callback parse tests -->
 <script type="javascript/json" id="test_successful_callback_parse" data-js-type="request"
       data-success-code="loadCb"
       data-failure-code="errorCb"
@@ -146,15 +142,29 @@
       data-loading-code="function(request) {}">
 </script>
 
-<!-- Intentionally not including data-js-type="request" to avoid parse -->
-<script type="javascript/json" id="test_unsupported_callback_parse" data-unsupported-code="function() {}"></script>
+<!-- Method parse tests -->
+<script type="javascript/json" data-js-type="request" id="test_unsupported_callback_parse"
+        data-unsupported-code="function() {}"></script>
+<script type="javascript/json" data-js-type="request" id="test_method_default"></script>
+<script type="javascript/json" data-js-type="request" id="test_method_with_data_attribute"
+        data-method="put"></script>
+<script type="javascript/json" data-js-type="request" id="test_method_with_method_attribute"
+        method="post"></script>
+<script type="javascript/json" data-js-type="request" id="test_method_with_data_and_method_attribute"
+        method="put"
+        data-method="delete"></script>
 
-<script type="text/json" id="test_method_default" data-js-type="request"></script>
-<script type="text/json" id="test_method_with_data_attribute" data-js-type="request" data-method="put"></script>
-<script type="text/json" id="test_method_with_method_attribute" data-js-type="request" method="post"></script>
-<script type="text/json" id="test_method_with_data_and_method_attribute" data-js-type="request" method="put" data-method="delete"></script>
+<!-- Argument parse tests -->
+<script type="javascript/json" data-js-type="request" id="test_args_parse"
+        data-url="/some/url"
+        data-insertion="bottom"
+        data-params="a=b&c=d"
+        data-eval="true"
+        data-sync="true">
+</script>
 
-<script type="text/json" id="test_callback_execution" data-js-type="request" method="post"
+<!-- Callback execution tests -->
+<script type="javascript/json" id="test_callback_execution" data-js-type="request" method="post"
       data-success-code="execSuccessCallback"
       data-failure-code="execFailureCallback"
       data-complete-code="execCompleteCallback"

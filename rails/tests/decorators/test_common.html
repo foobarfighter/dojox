@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../../../../dojo/dojo.js"
+            djConfig="isDebug: true, parseOnLoad: true"></script>
+    <script type="text/javascript">
+        dojo.require("doh.runner");
+        dojo.require("dojox.rails");
+        dojo.require("dojox.rails.decorators.common");
+
+        var drd = dojox.rails.decorators;
+        doh.assertContains = function(value, array){
+            var found = false;
+            for(var i=0; i<array.length; i++){
+                if (value == array[i]){
+                    found = true;
+                    break;
+                }
+            }
+            if (!found){throw new doh._AssertFailure("[" + array + "] does not contain '" + value + "'")}
+        }
+
+        doh.register("dojox.rails.tests.decorators.common", [
+            {
+                name: "ArgMap",
+                runTest: function(t) {
+                    console.debug(t.constructor, t)
+                    var argMap = new drd.ArgMap({
+                        testRemovedKey:     null,
+                        testString:         "mappedTestString",
+                        testArrayValueMap:  ["mappedTestArrayValueMap", function(v) {
+                            return v.toLowerCase();
+                        }],
+                        testFuncValueMap:   function(v) { return "quux"; }
+                    });
+
+                    t.assertContains("testRemovedKey", argMap.getMappingKeys());
+                    t.assertContains("testString", argMap.getMappingKeys());
+                    t.assertContains("testArrayValueMap", argMap.getMappingKeys());
+                    t.assertContains("testFuncValueMap", argMap.getMappingKeys());
+
+                    var mappedArgs = argMap.map({
+                        testRemovedKey:      "foo",
+                        testString:          "bar",
+                        testArrayValueMap:   "BAZ",
+                        testFuncValueMap:    "bing"
+                    });
+
+                    t.t(mappedArgs.testRemovedKey === undefined);
+                    t.is("bar", mappedArgs.mappedTestString);
+                    t.is("baz", mappedArgs.mappedTestArrayValueMap);
+                    t.is("quux", mappedArgs.testFuncValueMap);
+                }
+            }
+        ]);
+
+        doh.run();
+    </script>
+</head>
+<body>
+
+</body>
+</html>

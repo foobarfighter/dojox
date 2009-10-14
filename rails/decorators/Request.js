@@ -1,50 +1,62 @@
 dojo.provide("dojox.rails.decorators.Request");
-dojo.require("dojox.rails.decorators.Base");
+dojo.require("dojox.rails.decorators.common");
 
 dojo.declare("dojox.rails.decorators.Request",
   dojox.rails.decorators.Base, {
 
   _connects: [],
-  _method: "GET",
+  _method: "get",
+  _args: {},
 
-	constructor: function(node) {
-    this._initializeMethod();
-    this._initializeCodeHandlers();
-	},
+  constructor: function(node) {
+    this._parseMethod();
+    this._parseArgs();
+    this._parseCodeHandlers();
+  },
+
+  // Connection events
+  onSuccess: function(request, ioArgs) {},
+  onFailure: function(request, ioArgs) {},
+  onComplete: function(request, ioArgs) {},
+  onInteractive: function(request, ioArgs) {},
+  onLoaded: function(request, ioArgs) {},
+  onLoading: function(request, ioArgs) {},
 
   getMethod: function() {
     return this._method;
   },
 
-  exec: function(){
+  exec: function(url, /*Object?*/ xhrArgs) {
+    var dojoArgs = this._mapToDojo(xhrArgs);
+    var xhrMethod = dojo["xhr" + dojox.rails.camelize(this.getMethod(), true)];
+    if (xhrMethod){
+      xhrMethod(dojoArgs);
+    }else{
+      dojo.xhr(this.getMethod(), dojoArgs);
+    }
   },
 
-  onSuccess: function(request, ioArgs){
+  _mapToDojo: function(xhrArgs){
+    return {};
   },
 
-  onFailure: function(request, ioArgs){
+  _parseArgs: function() {
+    var keys = dojox.rails.decorators._XhrArgMap.getMappingsKeys
+    dojo.forEach(keys, function(key){
+      this._args[key] = dojo.attr(this.domNode, "data-" + key);
+    }, this);
   },
 
-  onComplete: function(request, ioArgs){
-  },
-
-  onInteractive: function(request, ioArgs){
-  },
-
-  onLoaded: function(request, ioArgs){
-  },
-
-  onLoading: function(request, ioArgs){
-  },
-
-  _initializeMethod: function() {
+  _parseMethod: function() {
     var m = dojo.attr(this.domNode, "data-method") || dojo.attr(this.domNode, "method");
-    if (m){this._method = m.toUpperCase()}
+    if (m) {
+      this._method = m.toLowerCase()
+    }
   },
 
-  _initializeCodeHandlers: function() {
+  _parseCodeHandlers: function() {
     var attrs = this.domNode.attributes;
-    for(var i=0; i<attrs.length; i++){
+    for (var i = 0; i < attrs.length; i++) {
       if (!attrs[i]) continue;
 
       var matches = attrs[i].name.match(/data-(.*)-code/);
@@ -55,10 +67,10 @@ dojo.declare("dojox.rails.decorators.Request",
   },
 
   _mapAndConnect: function(cbName, cbCode) {
-    var mappedCallback = dojox.rails.decorators.Request._CallbackMap[cbName];
-    if (mappedCallback){
+    var mappedCallback = "on" + dojox.rails.camelize(cbName, true);
+    if (this[mappedCallback]) {
       this._connects.push(dojo.connect(this, mappedCallback, null, this._evalCallback(cbCode)));
-    }else{
+    } else {
       this._throwUnsupportedCallbackError(cbName);
     }
   },
@@ -71,12 +83,3 @@ dojo.declare("dojox.rails.decorators.Request",
     throw new Error("'" + cbName + "' is an unsupported callback");
   }
 });
-
-dojox.rails.decorators.Request._CallbackMap = {
-  success:      "onSuccess",
-  failure:      "onFailure",
-  complete:     "onComplete",
-  interactive:  "onInteractive",
-  loaded:       "onLoaded",
-  loading:      "onLoading"
-}
