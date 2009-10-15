@@ -11,6 +11,8 @@
 		dojo.require("dojox.rails.decorators.Request");
 
         var drd = dojox.rails.decorators;
+        var fakeRequest = { responseText: "fake text!" };
+        var faceIoArgs = {};
 
         doh.register("dojox.rails.tests.decorators.Request", [
             {

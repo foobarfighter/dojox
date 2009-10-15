@@ -10,22 +10,81 @@
 
         dojo.require("dojox.rails.decorators.Updater");
 
+        var fakeRequest = { responseText: "fake text!" };
+        var faceIoArgs = {};
         var resetSandbox = function(){
             dojo.byId("sandbox").innerHTML = dojo.byId("generator").innerHTML;
         }
 
-
+        var drd = dojox.rails.decorators;
 		doh.register("dojox.rails.tests.decorators.Updater", [
-			{
+            {
 				name: "Test Request params parsing",
-				runTest: function(t) {}
+				runTest: function(t) {
+                }
 			},
             {
-				name: "Test Updater params parsing",
-				runTest: function(t) {}
+                name: "Test mappings",
+                runTest: function(t) {
+                    var mappedArgs;
+                    mappedArgs = drd._UpdaterArgMap.map({eval: "true", position: "top"});
+                    t.is("first", mappedArgs.place);
+                    t.t(mappedArgs.evalScripts);
+
+                    mappedArgs = drd._UpdaterArgMap.map({eval: true, position: "bottom"});
+                    t.is("last", mappedArgs.place);
+                    t.t(mappedArgs.evalScripts);
+
+                    mappedArgs = drd._UpdaterArgMap.map({eval: "false", position: "before"});
+                    t.is("before", mappedArgs.place);
+                    t.f(mappedArgs.evalScripts);
+
+                    mappedArgs = drd._UpdaterArgMap.map({eval: null, position: "after"});
+                    t.is("after", mappedArgs.place);
+                    t.f(mappedArgs.evalScripts);
+
+                    mappedArgs = drd._UpdaterArgMap.map({
+                        "update-success": ".success",
+                        "update-failure": ".failure",
+                        "update-complete": ".complete"
+                    });
+                    t.is(".success", mappedArgs.successQuery);
+                    t.is(".failure", mappedArgs.failureQuery);
+                    t.is(".complete", mappedArgs.completeQuery);
+                }
+            },
+            {
+				name: "Test Updater args parsing",
+				runTest: function(t) {
+                    var updater = new drd.Updater("test_first");
+                    var args = updater._updaterArgs;
+                    t.is("first", args.place);
+                    t.t(args.evalScripts);
+                    t.is("#sandbox .success_container div.out", args.successQuery);
+                    t.is("#sandbox .failure_container div.out", args.failureQuery);
+                    t.is("#sandbox .complete_container div.out", args.completeQuery);
+                }
 			},
             {
-                name: "Test position mapping",
+                name: "Test Updater handlers are connected",
+                runTest: function(t) {
+                    var updater = new drd.Updater("test_first");
+
+                    t.mock(updater, "_handleSuccess");
+                    updater.onSuccess(fakeRequest, faceIoArgs);
+                    t.assertMock(updater._handleSuccess);
+
+                    t.mock(updater, "_handleFailure");
+                    updater.onFailure(fakeRequest, faceIoArgs);
+                    t.assertMock(updater._handleFailure);
+
+                    t.mock(updater, "_handleComplete");
+                    updater.onComplete(fakeRequest, faceIoArgs);
+                    t.assertMock(updater._handleComplete);
+                }
+            },
+            {
+                name: "Integration test",
                 runTest: function(t) {}
             }
 		]);
@@ -38,14 +97,15 @@
 <body>
 
 <script type="javascript/json" data-js-type="updater" id="test_first"
-    data-position="first"
+    data-position="top"
     data-update-success="#sandbox .success_container div.out"
     data-update-failure="#sandbox .failure_container div.out"
-    data-update-complete="#sandbox .complete_container div.out">
+    data-update-complete="#sandbox .complete_container div.out"
+    data-eval="true">
 </script>
 
 <script type="javascript/json" data-js-type="updater" id="test_last"
-    data-position="last"
+    data-position="bottom"
     data-update-success="#sandbox .success_container div.out"
     data-update-failure="#sandbox .failure_container div.out"
     data-update-complete="#sandbox .complete_container div.out">
