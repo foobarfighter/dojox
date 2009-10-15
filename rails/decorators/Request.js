@@ -95,3 +95,28 @@ dojo.declare("dojox.rails.decorators.Request",
     throw new Error("'" + cbName + "' is an unsupported callback");
   }
 });
+
+(function() {
+  var drd = dojox.rails.decorators;
+
+  drd._XhrCallbackMap = new drd.ArgMap({
+    "onUninitialized":	null,
+    "onLoading":				null,
+    "onLoaded":					null,
+    "onInteractive":		null,
+    "onCreate":         null,
+    "onComplete":				"handle",
+    "onFailure":				"error",
+    "onSuccess":				"load"
+  });
+
+  var parseTrueFalse = function(v) { return v == "true" || v == true };
+
+  drd._XhrArgMap = new drd.ArgMap({
+    "url":        "url",
+    "sync":       parseTrueFalse,
+    "method":	    function(v) { return v.toLowerCase(); },
+    "params":		  [ "content", function(v) { return dojo.isObject(v) ? v : dojo.queryToObject(v); } ],
+    "eval":	      ["evalScripts", parseTrueFalse]
+  });
+})();

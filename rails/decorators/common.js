@@ -42,36 +42,3 @@ dojo.declare("dojox.rails.decorators.ArgMap", null, {
     return mappedArgs;
   }
 });
-
-(function() {
-  var drd = dojox.rails.decorators;
-
-  drd._XhrCallbackMap = new drd.ArgMap({
-    "onUninitialized":	null,
-    "onLoading":				null,
-    "onLoaded":					null,
-    "onInteractive":		null,
-    "onCreate":         null,
-    "onComplete":				"handle",
-    "onFailure":				"error",
-    "onSuccess":				"load"
-  });
-
-  var insertionMap = {
-    "top":		 "first",
-    "bottom":	 "last",
-    "before":	 "before",
-    "after":	 "after"
-  };
-
-  var parseTrueFalse = function(v) { return v == "true" || v == true };
-
-  drd._XhrArgMap = new drd.ArgMap({
-    "url":        "url",
-    "sync":       parseTrueFalse,
-    "method":	    function(v) { return v.toLowerCase(); },
-    "insertion":	[ "place", function(v) { return insertionMap[v] }],
-    "params":		  [ "content", function(v) { return dojo.isObject(v) ? v : dojo.queryToObject(v); } ],
-    "eval":	      ["evalScripts", parseTrueFalse]
-  });
-})();

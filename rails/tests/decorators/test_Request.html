@@ -53,7 +53,6 @@
                 runTest: function(t){
                     var request = new drd.Request("test_args_parse");
                     t.is("/some/url", request._args.url);
-                    t.is("bottom", request._args.insertion);
                     t.is("a=b&c=d", request._args.params);
                     t.is("true", request._args.eval);
                     t.is("true", request._args.sync);
@@ -66,7 +65,6 @@
                     var mappedArgs = request._mapToDojo({ 'foo': 'bar' });
 
                     t.is("/some/url", mappedArgs.url);
-                    t.is("last", mappedArgs.place);
                     t.is({ a: 'b', c: 'd' }, mappedArgs.content);
                     t.is(true, mappedArgs.evalScripts);
                     t.is(true, mappedArgs.sync);
@@ -184,7 +182,6 @@
 <!-- Argument parse tests -->
 <script type="javascript/json" data-js-type="request" id="test_args_parse"
         data-url="/some/url"
-        data-insertion="bottom"
         data-params="a=b&c=d"
         data-eval="true"
         data-sync="true">
