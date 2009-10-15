@@ -1,4 +1,5 @@
 dojo.provide("dojox.rails.decorators.Request");
+dojo.require("dojox.rails");
 dojo.require("dojox.rails.decorators.common");
 
 dojo.declare("dojox.rails.decorators.Request",

@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+	    djConfig="isDebug: true, parseOnLoad: true"></script>
+	<script type="text/javascript">
+        dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");
+
+        dojo.require("dojox.rails.decorators.Updater");
+
+        var resetSandbox = function(){
+            dojo.byId("sandbox").innerHTML = dojo.byId("generator").innerHTML;
+        }
+
+
+		doh.register("dojox.rails.tests.decorators.Updater", [
+			{
+				name: "Test Request params parsing",
+				runTest: function(t) {}
+			},
+            {
+				name: "Test Updater params parsing",
+				runTest: function(t) {}
+			},
+            {
+                name: "Test position mapping",
+                runTest: function(t) {}
+            }
+		]);
+
+        dojo.addOnLoad(function() {
+            doh.run();
+        });
+	</script>
+</head>
+<body>
+
+<script type="javascript/json" data-js-type="updater" id="test_first"
+    data-position="first"
+    data-update-success="#sandbox .success_container div.out"
+    data-update-failure="#sandbox .failure_container div.out"
+    data-update-complete="#sandbox .complete_container div.out">
+</script>
+
+<script type="javascript/json" data-js-type="updater" id="test_last"
+    data-position="last"
+    data-update-success="#sandbox .success_container div.out"
+    data-update-failure="#sandbox .failure_container div.out"
+    data-update-complete="#sandbox .complete_container div.out">
+</script>
+
+<script type="javascript/json" data-js-type="updater" id="test_before"
+    data-position="before"
+    data-update-success="#sandbox .success_container div.out"
+    data-update-failure="#sandbox .failure_container div.out"
+    data-update-complete="#sandbox .complete_container div.out">
+</script>
+
+<script type="javascript/json" data-js-type="updater" id="test_after"
+    data-position="after"
+    data-update-success="#sandbox .success_container div.out"
+    data-update-failure="#sandbox .failure_container div.out"
+    data-update-complete="#sandbox .complete_container div.out">
+</script>
+
+
+<!-- Test output nodes -->
+<div id="generator">
+    <blockquote class="success_container">
+        <span>First span</span>
+        <div class="out"></div>
+        <span>Last span</span>
+    </blockquote>
+    <blockquote class="failure_container">
+        <span>First span</span>
+        <div class="out"></div>
+        <span>Last span</span>
+    </blockquote>
+    <blockquote class="complete_container">
+        <span>First span</span>
+        <div class="out"></div>
+        <span>Last span</span>
+    </blockquote>
+</div>
+
+<!-- Setup for the test will go here.  Refreshed between tests. -->
+<div id="sandbox">
+</div>
+
+
+</body>
+</html>
