@@ -78,14 +78,53 @@
                     updater.onFailure(fakeRequest, faceIoArgs);
                     t.assertMock(updater._handleFailure);
 
-                    t.mock(updater, "_handleComplete");
-                    updater.onComplete(fakeRequest, faceIoArgs);
-                    t.assertMock(updater._handleComplete);
+//                    t.mock(updater, "_handleComplete");
+//                    updater.onComplete(fakeRequest, faceIoArgs);
+//                    t.assertMock(updater._handleComplete);
                 }
             },
             {
-                name: "Integration test",
-                runTest: function(t) {}
+                name: "EvalScripts integration test",
+                setUp: function() {
+                    dojo.global.testEvalScripts = function() {};
+                },
+                tearDown: function() {
+                    delete dojo.global["testEvalScripts"];
+                },
+                runTest: function(t) {
+                    var updater = new drd.Updater("test_first");
+
+                    t.t(updater._updaterArgs.evalScripts);
+                    t.mock(dojo.global, "testEvalScripts");
+
+                    updater.exec("../fixtures/test_ajax.html");
+                    var d = new doh.Deferred();
+                    setTimeout(function() { d.callback(dojo.global.testEvalScripts.__mockCalled == 1); }, 200);
+
+                    return d;
+                }
+            },
+            {
+                name: "NO EvalScripts integration test",
+                setUp: function() {
+                    dojo.global.testEvalScripts = function() {};
+                },
+                tearDown: function() {
+                    delete dojo.global["testEvalScripts"];
+                },
+                runTest: function(t) {
+                    var updater = new drd.Updater("test_first");
+
+                    updater._updaterArgs.evalScripts = false;
+                    t.f(updater._updaterArgs.evalScripts);
+                    t.mock(dojo.global, "testEvalScripts");
+
+                    updater.exec("../fixtures/test_ajax.html");
+                    var d = new doh.Deferred();
+                    setTimeout(function() { d.callback(!dojo.global.testEvalScripts.__mockCalled); }, 200);
+
+                    return d;
+                }
             }
 		]);
 

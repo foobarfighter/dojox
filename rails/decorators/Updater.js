@@ -5,6 +5,7 @@ dojo.require("dojox.rails.decorators.common");
 dojo.require("dojox.rails.decorators.Request");
 
 dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
+  STRIP_REGEXP: new RegExp('<script[^>]*>([\\S\\s]*?)<\/script>', "img"),
   _updaterArgs: {},
 
   constructor: function(domNode){
@@ -14,7 +15,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
     dojo.mixin(this._updaterArgs, mappedArgs);
     dojo.connect(this, "onSuccess", this, "_handleSuccess");
     dojo.connect(this, "onFailure", this, "_handleFailure");
-    dojo.connect(this, "onComplete", this, "_handleComplete");
+//    dojo.connect(this, "onComplete", this, "_handleComplete");
   },
 
   _parseAttributes: function(node){
@@ -49,8 +50,36 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
 
   _handle: function(request, ioArgs, query){
     var nl = dojo.query(query);
-    nl.place(request.responseText, this._updaterArgs.place);
-  }
+    var scripts = null;
+    var responseText = request.toString() || request.responseText;
+		var doEval = this._updaterArgs.evalScripts;
+
+
+		if (doEval){scripts = this._grepScripts(responseText)}
+		responseText = this._strippedContent(responseText);
+    nl.place(responseText, this._updaterArgs.place);
+		if (doEval) this._evalScripts(scripts);
+  },
+
+  _grepScripts: function(responseText){
+		var scripts = [];
+		dojo.forEach(this.STRIP_REGEXP.exec(responseText), function(script, i){
+			if (i > 0) scripts.push(script);
+		});
+		return scripts;
+	},
+
+  _strippedContent: function(responseText){
+		return responseText.replace(this.STRIP_REGEXP, "");
+	},
+
+	_evalScripts: function(scripts){
+		if (!scripts) return;
+
+		dojo.forEach(scripts, function(script){
+			if (script) eval(script);
+		});
+	},
 });
 
 

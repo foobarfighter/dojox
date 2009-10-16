@@ -20,6 +20,12 @@ doh.mock = function(/*Object|null*/ scope, /*String*/func, /*Function?*/ stub){
   scope[func].__mockHint = hint;
 }
 
+doh.resetMock = function(mockedFunc){
+  mockedFunc.__mockCalled = 0;
+  mockedFunc.__mockArgs = null;
+  mockedFunc.__mockHint = null;
+}
+
 // TODO: Reset mock on assert
 doh.assertMock = function(/*Function*/ mockedFunc, /*Number*/ times) {
   var failPrefix = mockedFunc.__mockHint + ": ";
