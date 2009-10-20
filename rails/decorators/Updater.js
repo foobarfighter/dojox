@@ -15,7 +15,6 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
 
     dojo.mixin(this._updaterArgs, mappedArgs);
 
-    //FIXME: Should we only connect here if we found the args to handle the update for each respective response callback?
     if (this._updaterArgs.successQuery) dojo.connect(this, "onSuccess", this, "_handleSuccess");
     if (this._updaterArgs.failureQuery) dojo.connect(this, "onFailure", this, "_handleFailure");
     if (this._updaterArgs.completeQuery) dojo.connect(this, "onComplete", this, "_handleComplete");
