@@ -6,9 +6,10 @@ dojo.require("dojox.rails.decorators.Request");
 
 dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
   STRIP_REGEXP: new RegExp('<script[^>]*>([\\S\\s]*?)<\/script>', "img"),
-  _updaterArgs: {},
 
   constructor: function(domNode){
+    this._updaterArgs = {};
+
     var attributes = this._parseAttributes(this.domNode);
     var mappedArgs = this._mapAttributes(attributes, dojox.rails.decorators._UpdaterArgMap);
 
@@ -49,16 +50,22 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
   },
 
   _handle: function(request, ioArgs, query){
-    var nl = dojo.query(query);
     var scripts = null;
     var responseText = request.toString() || request.responseText;
 		var doEval = this._updaterArgs.evalScripts;
 
-
 		if (doEval){scripts = this._grepScripts(responseText)}
 		responseText = this._strippedContent(responseText);
-    nl.place(responseText, this._updaterArgs.place);
-		if (doEval) this._evalScripts(scripts);
+    this._placeHTML(query, responseText);
+
+    if (doEval) this._evalScripts(scripts);
+  },
+
+  _placeHTML: function(query, content){
+    var nl = dojo.query(query);
+    nl.forEach(function(refNode){
+      dojo.place("<!-- dojo.place hack -->" + content, refNode, this._updaterArgs.place);
+    }, this);
   },
 
   _grepScripts: function(responseText){
@@ -79,7 +86,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
 		dojo.forEach(scripts, function(script){
 			if (script) eval(script);
 		});
-	},
+	}
 });
 
 

@@ -10,7 +10,7 @@
 
         dojo.require("dojox.rails.decorators.Updater");
 
-        var fakeRequest = { responseText: "fake text!" };
+        var fakeRequest = { responseText: "fake text!", toString: function(){ return this.responseText } };
         var faceIoArgs = {};
         var resetSandbox = function(){
             dojo.byId("sandbox").innerHTML = dojo.byId("generator").innerHTML;
@@ -58,8 +58,9 @@
 				runTest: function(t) {
                     var updater = new drd.Updater("test_first");
                     var args = updater._updaterArgs;
+
                     t.is("first", args.place);
-                    t.t(args.evalScripts);
+                    t.f(args.evalScripts);
                     t.is("#sandbox .success_container div.out", args.successQuery);
                     t.is("#sandbox .failure_container div.out", args.failureQuery);
                     t.is("#sandbox .complete_container div.out", args.completeQuery);
@@ -84,6 +85,26 @@
                 }
             },
             {
+                name: "Update success integration test",
+                setUp: function() {
+                    resetSandbox();
+                },
+                runTest: function(t) {
+                    var updater = new drd.Updater("test_first");
+                    t.f(updater._updaterArgs.evalScripts);
+
+                    updater.exec("../fixtures/test_ajax.html");
+                    var d = new doh.Deferred();
+                    setTimeout(function() {
+                        var rnl = dojo.query("#sandbox .success_container div.out .response");
+                        var dnl = dojo.query("#sandbox .success_container div.out .dangler");
+                        d.callback(rnl.length == 1 && dnl.length == 1);
+                    }, 200);
+
+                    return d;
+                }
+            },
+            {
                 name: "EvalScripts integration test",
                 setUp: function() {
                     dojo.global.testEvalScripts = function() {};
@@ -92,14 +113,14 @@
                     delete dojo.global["testEvalScripts"];
                 },
                 runTest: function(t) {
-                    var updater = new drd.Updater("test_first");
+                    var updater = new drd.Updater("test_eval");
 
                     t.t(updater._updaterArgs.evalScripts);
                     t.mock(dojo.global, "testEvalScripts");
 
                     updater.exec("../fixtures/test_ajax.html");
                     var d = new doh.Deferred();
-                    setTimeout(function() { d.callback(dojo.global.testEvalScripts.__mockCalled == 1); }, 200);
+                    setTimeout(function() { d.callback(t.assertMock(dojo.global.testEvalScripts)); }, 200);
 
                     return d;
                 }
@@ -113,7 +134,7 @@
                     delete dojo.global["testEvalScripts"];
                 },
                 runTest: function(t) {
-                    var updater = new drd.Updater("test_first");
+                    var updater = new drd.Updater("test_eval");
 
                     updater._updaterArgs.evalScripts = false;
                     t.f(updater._updaterArgs.evalScripts);
@@ -121,11 +142,14 @@
 
                     updater.exec("../fixtures/test_ajax.html");
                     var d = new doh.Deferred();
-                    setTimeout(function() { d.callback(!dojo.global.testEvalScripts.__mockCalled); }, 200);
+                    setTimeout(function() {
+                        d.callback(dojo.global.testEvalScripts.__mockCalled === undefined);
+                    }, 200);
 
                     return d;
                 }
-            }
+            },
+            
 		]);
 
         dojo.addOnLoad(function() {
@@ -139,8 +163,7 @@
     data-position="top"
     data-update-success="#sandbox .success_container div.out"
     data-update-failure="#sandbox .failure_container div.out"
-    data-update-complete="#sandbox .complete_container div.out"
-    data-eval="true">
+    data-update-complete="#sandbox .complete_container div.out">
 </script>
 
 <script type="javascript/json" data-js-type="updater" id="test_last"
@@ -164,6 +187,13 @@
     data-update-complete="#sandbox .complete_container div.out">
 </script>
 
+<script type="javascript/json" data-js-type="updater" id="test_eval"
+    data-position="top"
+    data-update-success="#sandbox .success_container div.out"
+    data-update-failure="#sandbox .failure_container div.out"
+    data-update-complete="#sandbox .complete_container div.out"
+    data-eval="true">
+</script>
 
 <!-- Test output nodes -->
 <div id="generator">

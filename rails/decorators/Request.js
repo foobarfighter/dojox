@@ -5,11 +5,11 @@ dojo.require("dojox.rails.decorators.common");
 dojo.declare("dojox.rails.decorators.Request",
   dojox.rails.decorators.Base, {
 
-  _connects: [],
-  _method: "get",
-  _args: {},
-
   constructor: function(node) {
+    this._connects = [];
+    this._method = "get";
+    this._args = {};
+
     this._parseMethod();
     this._parseArgs();
     this._parseCodeHandlers();

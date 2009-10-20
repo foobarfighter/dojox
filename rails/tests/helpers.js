@@ -42,6 +42,8 @@ doh.assertMock = function(/*Function*/ mockedFunc, /*Number*/ times) {
       throw new doh._AssertFailure(failPrefix + "expected to be called " + times + " times but was called " + called + " times")
     }
   }
+
+  return true;
 }
 
 doh.assertContains = function(/*Object*/ value, /*Array*/ array){
@@ -55,4 +57,6 @@ doh.assertContains = function(/*Object*/ value, /*Array*/ array){
   if (!found) {
     throw new doh._AssertFailure("[" + array + "] does not contain '" + value + "'")
   }
+
+  return true;
 }

@@ -1,16 +1,12 @@
 dojo.provide("dojox.rails.decorators.common");
 
 dojo.declare("dojox.rails.decorators.Base", null, {
-  domNode: null,
-
 	constructor: function(node) {
 		this.domNode = dojo.byId(node);
 	}
 });
 
 dojo.declare("dojox.rails.decorators.ArgMap", null, {
-  _mappings: null,
-
   constructor: function(mappings){
     this._mappings = mappings;
   },
