@@ -37,7 +37,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
   _mapAttributes: function(attributes, mapper){
     return mapper.map(attributes);
   },
-  
+
   _handleSuccess: function(request, ioArgs){
     this._handle(request, ioArgs, this._updaterArgs.successQuery);
   },
