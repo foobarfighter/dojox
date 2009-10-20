@@ -19,11 +19,6 @@
         var drd = dojox.rails.decorators;
 		doh.register("dojox.rails.tests.decorators.Updater", [
             {
-				name: "Test Request params parsing",
-				runTest: function(t) {
-                }
-			},
-            {
                 name: "Test mappings",
                 runTest: function(t) {
                     var mappedArgs;
@@ -67,21 +62,34 @@
                 }
 			},
             {
-                name: "Test Updater handlers are connected",
+                name: "Test Updater handler connections",
                 runTest: function(t) {
-                    var updater = new drd.Updater("test_first");
+                    var connected_updater = new drd.Updater("test_first");
+                    t.mock(connected_updater, "_handleSuccess");
+                    connected_updater.onSuccess(fakeRequest, faceIoArgs);
+                    t.assertMock(connected_updater._handleSuccess);
 
-                    t.mock(updater, "_handleSuccess");
-                    updater.onSuccess(fakeRequest, faceIoArgs);
-                    t.assertMock(updater._handleSuccess);
+                    t.mock(connected_updater, "_handleFailure");
+                    connected_updater.onFailure(fakeRequest, faceIoArgs);
+                    t.assertMock(connected_updater._handleFailure);
 
-                    t.mock(updater, "_handleFailure");
-                    updater.onFailure(fakeRequest, faceIoArgs);
-                    t.assertMock(updater._handleFailure);
+                    t.mock(connected_updater, "_handleComplete");
+                    connected_updater.onComplete(fakeRequest, faceIoArgs);
+                    t.assertMock(connected_updater._handleComplete);
 
-//                    t.mock(updater, "_handleComplete");
-//                    updater.onComplete(fakeRequest, faceIoArgs);
-//                    t.assertMock(updater._handleComplete);
+                    
+                    var unconnected_updater = new drd.Updater("test_no_connects");
+                    t.mock(unconnected_updater, "_handleSuccess");
+                    unconnected_updater.onSuccess(fakeRequest, faceIoArgs);
+                    t.assertMock(unconnected_updater._handleSuccess, 0);
+
+                    t.mock(unconnected_updater, "_handleFailure");
+                    unconnected_updater.onFailure(fakeRequest, faceIoArgs);
+                    t.assertMock(unconnected_updater._handleFailure, 0);
+
+                    t.mock(unconnected_updater, "_handleComplete");
+                    unconnected_updater.onComplete(fakeRequest, faceIoArgs);
+                    t.assertMock(unconnected_updater._handleComplete, 0);
                 }
             },
             {
@@ -98,7 +106,29 @@
                     setTimeout(function() {
                         var rnl = dojo.query("#sandbox .success_container div.out .response");
                         var dnl = dojo.query("#sandbox .success_container div.out .dangler");
-                        d.callback(rnl.length == 1 && dnl.length == 1);
+                        var rawText = dojo.query("#sandbox .success_container div.out")[0].innerHTML;
+                        d.callback(rnl.length == 1 && dnl.length == 1 && rawText.indexOf("some text") != -1);
+                    }, 200);
+
+                    return d;
+                }
+            },
+            {
+                name: "Update failure integration test",
+                setUp: function() {
+                    resetSandbox();
+                },
+                runTest: function(t) {
+                    var failureText = dojo.query("#sandbox .failure_container div.out")[0].innerHTML;
+                    var updater = new drd.Updater("test_first");
+
+                    // TODO: Better test failure with a script that returns a 500 response code and valid response markup
+                    updater.exec("../fixtures/test_fail.html");
+
+                    var d = new doh.Deferred();
+                    setTimeout(function() {
+                        var responseFailureText = dojo.query("#sandbox .failure_container div.out")[0].innerHTML;
+                        d.callback(failureText != responseFailureText);
                     }, 200);
 
                     return d;
@@ -143,7 +173,7 @@
                     updater.exec("../fixtures/test_ajax.html");
                     var d = new doh.Deferred();
                     setTimeout(function() {
-                        d.callback(dojo.global.testEvalScripts.__mockCalled === undefined);
+                        d.callback(t.assertMock(dojo.global.testEvalScripts, 0));
                     }, 200);
 
                     return d;
@@ -194,6 +224,12 @@
     data-update-complete="#sandbox .complete_container div.out"
     data-eval="true">
 </script>
+
+<script type="javascript/json" data-js-type="updater" id="test_no_connects"
+    data-position="top"
+    data-eval="true">
+</script>
+
 
 <!-- Test output nodes -->
 <div id="generator">

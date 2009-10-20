@@ -14,9 +14,11 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
     var mappedArgs = this._mapAttributes(attributes, dojox.rails.decorators._UpdaterArgMap);
 
     dojo.mixin(this._updaterArgs, mappedArgs);
-    dojo.connect(this, "onSuccess", this, "_handleSuccess");
-    dojo.connect(this, "onFailure", this, "_handleFailure");
-//    dojo.connect(this, "onComplete", this, "_handleComplete");
+
+    //FIXME: Should we only connect here if we found the args to handle the update for each respective response callback?
+    if (this._updaterArgs.successQuery) dojo.connect(this, "onSuccess", this, "_handleSuccess");
+    if (this._updaterArgs.failureQuery) dojo.connect(this, "onFailure", this, "_handleFailure");
+    if (this._updaterArgs.completeQuery) dojo.connect(this, "onComplete", this, "_handleComplete");
   },
 
   _parseAttributes: function(node){
@@ -51,7 +53,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
 
   _handle: function(request, ioArgs, query){
     var scripts = null;
-    var responseText = request.toString() || request.responseText;
+    var responseText = request.status == null ? request.toString() : request.responseText;
 		var doEval = this._updaterArgs.evalScripts;
 
 		if (doEval){scripts = this._grepScripts(responseText)}

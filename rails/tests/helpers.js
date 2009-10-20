@@ -17,6 +17,7 @@ doh.mock = function(/*Object|null*/ scope, /*String*/func, /*Function?*/ stub){
     }
   })(replaceFunc);
 
+  doh.resetMock(scope[func]);
   scope[func].__mockHint = hint;
 }
 
@@ -32,7 +33,7 @@ doh.assertMock = function(/*Function*/ mockedFunc, /*Number*/ times) {
   var called = mockedFunc.__mockCalled;
 
   if (times == 0){
-    if (called == null){
+    if (called != times){
       throw new doh._AssertFailure(failPrefix + "was called " + called + " times but should not have been called");
     }
   }else{
