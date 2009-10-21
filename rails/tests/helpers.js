@@ -1,7 +1,7 @@
 dojo.provide("dojox.rails.tests.helpers");
 
 // FIXME: This doesn't really work right after a connect; Even if it did, it doesn't take into account scope+func calls
-// The function can be called from within multiple scopes and it the count will increase with each call eventhough it
+// The function can be called from within multiple scopes and the count will increase with each call eventhough it
 // should only increase with each scope+func pairing.
 doh.mock = function(/*Object|null*/ scope, /*String*/func, /*Function?*/ stub){
   scope = scope || dojo.global;
@@ -60,4 +60,13 @@ doh.assertContains = function(/*Object*/ value, /*Array*/ array){
   }
 
   return true;
+}
+
+doh.assertConnection = function(connects, obj, cbName) {
+  var found = false;
+  dojo.forEach(connects, function(connect){
+    console.debug("CONNECTS", connects);
+    if (connect[0] == obj && connect[1] == cbName){ found = true }
+  });
+  if (!found) throw new doh._AssertFailure("'" + cbName + "' callback was not connected");
 }

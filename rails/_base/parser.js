@@ -65,4 +65,10 @@ dojo.provide("dojox.rails._base.parser");
 			dr.parse();
 		});
 	}
+
+  dr.AttributeParser = {
+    TrueFalse:        function(v) { return v == "true" || v == true },
+    ThrowUnsupported: function(v) { throw new Error("'data-" + v + "' is unsupported") },
+    Code:             function(v) { return eval("(" + v + ")"); }
+  };
 })();

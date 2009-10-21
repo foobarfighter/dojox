@@ -11,31 +11,14 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
     this._updaterArgs = {};
 
     var attributes = this._parseAttributes(this.domNode);
-    var mappedArgs = this._mapAttributes(attributes, dojox.rails.decorators._UpdaterArgMap);
+    this._updaterArgs = this._mapAttributes(attributes, dojox.rails.decorators._UpdaterArgMap);
+    this._connectUpdateHandlers();
+  },
 
-    dojo.mixin(this._updaterArgs, mappedArgs);
-
+  _connectUpdateHandlers: function(){
     if (this._updaterArgs.successQuery) dojo.connect(this, "onSuccess", this, "_handleSuccess");
     if (this._updaterArgs.failureQuery) dojo.connect(this, "onFailure", this, "_handleFailure");
     if (this._updaterArgs.completeQuery) dojo.connect(this, "onComplete", this, "_handleComplete");
-  },
-
-  _parseAttributes: function(node){
-    var attrs = node.attributes;
-    var parsedAttrs = {};
-    for (var i = 0; i < attrs.length; i++) {
-      if (!attrs[i]) continue;
-
-      var matches = attrs[i].name.match(/^data-(.*)/);
-      if (matches && matches.length > 1) {
-        parsedAttrs[matches[1]] = dojo.attr(node, attrs[i].name);
-      }
-    }
-    return parsedAttrs;
-  },
-
-  _mapAttributes: function(attributes, mapper){
-    return mapper.map(attributes);
   },
 
   _handleSuccess: function(request, ioArgs){
@@ -93,6 +76,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
 
 (function() {
   var drd = dojox.rails.decorators;
+  var drap = dojox.rails.AttributeParser;
 
   var insertionMap = {
     "top":		 "first",
@@ -108,6 +92,6 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
     "update-success": 	"successQuery",
     "update-failure": 	"failureQuery",
     "update-complete": 	"completeQuery",
-    "eval":	            ["evalScripts", parseTrueFalse]
+    "eval":	            ["evalScripts", drap.TrueFalse]
   });
 })();

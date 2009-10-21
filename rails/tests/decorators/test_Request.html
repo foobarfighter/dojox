@@ -20,24 +20,9 @@
                 runTest: function(t) {
                     var request = new drd.Request("test_successful_callback_parse");
 
-                    var assertCallbackConnection = function(cbName){
-                        var cbMapping = "on" + dojox.rails.camelize(cbName);
-                        var found = false;
-                        dojo.forEach(request._connects, function(connect){
-                            if (connect[0] == request && connect[1] == cbMapping){ found = true }
-                        });
-                        t.t(found, "'" + cbName + "' callback was not connected");
-                    }
-
-                    var expectedMappedCallbacks = ["complete", "interactive", "loaded", "loading"];
-                    dojo.forEach(expectedMappedCallbacks, assertCallbackConnection);
-
-                    try{
-                        new drd.Request("test_unsupported_callback_parse");
-                        t.t(false, "Request decorator should not have been instantiated with an unsupported callback");
-                    }catch(e){
-                        t.is("'unsupported' is an unsupported callback", e.message);
-                    }
+                    t.assertConnection(request._connects, request, "onSuccess");
+                    t.assertConnection(request._connects, request, "onFailure");
+                    t.assertConnection(request._connects, request, "onComplete");
                 }
             },
             {
@@ -45,25 +30,23 @@
                 runTest: function(t) {
                     t.is("get", (new drd.Request("test_method_default")).getMethod());
                     t.is("put", (new drd.Request("test_method_with_data_attribute")).getMethod());
-                    t.is("post", (new drd.Request("test_method_with_method_attribute")).getMethod());
-                    t.is("delete", (new drd.Request("test_method_with_data_and_method_attribute")).getMethod());
                 }
             },
             {
                 name: "Request argument parsing",
                 runTest: function(t){
                     var request = new drd.Request("test_args_parse");
-                    t.is("/some/url", request._args.url);
-                    t.is("a=b&c=d", request._args.params);
-                    t.is("true", request._args.eval);
-                    t.is("true", request._args.sync);
+                    t.is("/some/url", request._requestArgs.url);
+                    t.is({ a: 'b', c: 'd' }, request._requestArgs.content);
+                    t.is(true, request._requestArgs.evalScripts);
+                    t.is(true, request._requestArgs.sync);
                 }
             },
             {
                 name: "Request argument mapping",
                 runTest: function(t) {
                     var request = new drd.Request("test_args_parse");
-                    var mappedArgs = request._mapToDojo({ 'foo': 'bar' });
+                    var mappedArgs = request._argsToDojo({ 'foo': 'bar' });
 
                     t.is("/some/url", mappedArgs.url);
                     t.is({ a: 'b', c: 'd' }, mappedArgs.content);
@@ -83,9 +66,6 @@
                     t.mock(null, "execSuccessCallback");
                     t.mock(null, "execFailureCallback");
                     t.mock(null, "execCompleteCallback");
-                    t.mock(null, "execInteractiveCallback");
-                    t.mock(null, "execLoadedCallback");
-                    t.mock(null, "execLoadingCallback");
 
                     var request = new drd.Request("test_callback_execution");
 
@@ -97,15 +77,6 @@
 
                     request.onComplete();
                     t.assertMock(execCompleteCallback);
-
-                    request.onInteractive();
-                    t.assertMock(execInteractiveCallback);
-
-                    request.onLoaded();
-                    t.assertMock(execLoadedCallback);
-
-                    request.onLoading();
-                    t.assertMock(execLoadingCallback);
                 }
             },
             {
@@ -147,9 +118,6 @@
         function execSuccessCallback() {}
         function execFailureCallback() {}
         function execCompleteCallback() {}
-        function execInteractiveCallback() {}
-        function execLoadedCallback() {}
-        function execLoadingCallback() {}
 
         dojo.addOnLoad(function() {
             doh.run();
@@ -160,26 +128,16 @@
 
 <!-- Callback parse tests -->
 <script type="javascript/json" id="test_successful_callback_parse" data-js-type="request"
-      data-success-code="loadCb"
-      data-failure-code="errorCb"
-      data-complete-code="function(request) {}"
-      data-interactive-code="function(request) {}"
-      data-loaded-code="function(request) {}"
-      data-loading-code="function(request) {}">
+        data-success-code="loadCb"
+        data-failure-code="errorCb"
+        data-complete-code="function(request) {}">
 </script>
-
-<script type="javascript/json" data-js-type="request" id="test_unsupported_callback_parse"
-        data-unsupported-code="function() {}"></script>
 
 <!-- Method parse tests -->
 <script type="javascript/json" data-js-type="request" id="test_method_default"></script>
 <script type="javascript/json" data-js-type="request" id="test_method_with_data_attribute"
-        data-method="put"></script>
-<script type="javascript/json" data-js-type="request" id="test_method_with_method_attribute"
-        method="post"></script>
-<script type="javascript/json" data-js-type="request" id="test_method_with_data_and_method_attribute"
-        method="put"
-        data-method="delete"></script>
+        data-method="put">
+</script>
 
 <!-- Argument parse tests -->
 <script type="javascript/json" data-js-type="request" id="test_args_parse"
@@ -191,12 +149,9 @@
 
 <!-- Callback execution tests -->
 <script type="javascript/json" id="test_callback_execution" data-js-type="request" method="post"
-      data-success-code="execSuccessCallback"
-      data-failure-code="execFailureCallback"
-      data-complete-code="execCompleteCallback"
-      data-interactive-code="execInteractiveCallback"
-      data-loaded-code="execLoadedCallback"
-      data-loading-code="execLoadingCallback">
+        data-success-code="execSuccessCallback"
+        data-failure-code="execFailureCallback"
+        data-complete-code="execCompleteCallback">
 </script>
 
 </body>
