@@ -36,10 +36,10 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
   _handle: function(request, ioArgs, query){
     var scripts = null;
     var responseText = request.status == null ? request.toString() : request.responseText;
-		var doEval = this._updaterArgs.evalScripts;
+    var doEval = this._updaterArgs.evalScripts;
 
-		if (doEval){scripts = this._grepScripts(responseText)}
-		responseText = this._strippedContent(responseText);
+    if (doEval){scripts = this._grepScripts(responseText)}
+    responseText = this._strippedContent(responseText);
     this._placeHTML(query, responseText);
 
     if (doEval) this._evalScripts(scripts);

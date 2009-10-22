@@ -57,6 +57,16 @@
                     t.is(null, decorator);
                 }
             },
+            {
+                name: '_resolveClassName',
+                runTest: function(t){
+                    var klass;
+                    t.is("RemoteLink", dojox.rails._resolveClassName('a', 'remote'));
+                    t.is("RemoteForm", dojox.rails._resolveClassName('form', 'remote'));
+                    t.is("Updater", dojox.rails._resolveClassName('script', 'updater'));
+                    t.is("Request", dojox.rails._resolveClassName('script', 'request'));
+                }
+            },
 			{
 				name: "parse",
                 tearDown: function() {

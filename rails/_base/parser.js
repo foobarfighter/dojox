@@ -46,19 +46,23 @@ dojo.provide("dojox.rails._base.parser");
     d.forEach(nodes, function(node){
       var tag = node.tagName.toLowerCase();
       var jsType = dojo.attr(node, "data-js-type");
-
-      var className;
-      if (tag == "script"){
-        className = dr.camelize(jsType);
-			} else {
-				className = dr.camelize(dr.camelize(jsType + "_" + tag));
-			}
-
-      var module = "dojox.rails.decorators." + className;
-      d.require(module);
+      var className = dr._resolveClassName(tag, jsType);
+      
+      d.require("dojox.rails.decorators." + className);
       dr.manager.register(jsType, new dr.decorators[className](node));
 		});
 	}
+
+  dr._resolveClassName = function(tag, jsType){
+      var className;
+      if (tag == "script"){
+        className = dr.camelize(jsType);
+      } else {
+        var tagMap = {'a': 'Link'};
+				className = dr.camelize(dr.camelize(jsType + "_" + (tagMap[tag] || tag)));
+			}
+      return className;
+  }
 	
 	if (d.config.parseOnLoad) {
 		d.addOnLoad(function() {

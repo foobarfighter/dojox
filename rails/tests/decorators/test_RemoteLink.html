@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+	    djConfig="isDebug: true, parseOnLoad: false"></script>
+    <!--<script type="text/javascript" src="plugd-1.3.0.min.js"></script>-->
+
+	<script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+
+		dojo.require("doh.runner");
+        dojo.require("dojox.rails.decorators.RemoteLink");
+        
+
+        var drd = dojox.rails.decorators;
+        var resetSandbox = function(){
+            dojo.byId("sandbox").innerHTML = dojo.byId("generator").innerHTML;
+        }
+
+		doh.register("dojox.rails.tests.decorators.RemoteLink", [
+			{
+				name: "Test parse",
+				runTest: function(t) {
+                    var remote;
+
+                    remote = new drd.RemoteLink("test_base");
+                    t.is("/foo", remote._requestArgs.url);
+
+                    remote = new drd.RemoteLink("test_with_data_url");
+                    t.is("/bar", remote._requestArgs.url);
+				},
+                // These features are more heavily tested in the updater and request,
+                // but they deserve a little attention here to make sure they work with
+                // an inherited module.
+                name: "Smoke integration",
+                setUp: function(){
+                    resetSandbox();
+                },
+                runTest: function(t) {
+                    var remote;
+
+                    remote = new drd.RemoteLink("test_success");
+                    dojo.trigger("test_success", "click");
+
+                    var d = new doh.Deferred();
+                    setTimeout(function() {
+                        var query = "#sandbox .success";
+                        var success = dojo.query(query).length == 1;
+                        if (success) {
+                            d.callback(success);
+                        }else{
+                            d.errback(new Error("Could not find expected nodes from query: " + query));
+                        }
+                    }, 200);
+
+                    return d;
+                }
+			}
+		]);
+
+        dojo.addOnLoad(function() {
+            doh.run();
+        });
+	</script>
+</head>
+<body>
+
+<!-- Fixtures -->
+<a href="/foo" id="test_base" data-js-type="remote">test base</a>
+<a href="/jsrequired/page" id="test_with_data_url" data-url="/bar" data-js-type="remote">test with data-url</a>
+<a href="../fixtures/test_ajax.html" id="test_success" data-js-type="remote" data-update-success="#sandbox .response">test success</a>
+
+
+<!-- Generator HTML -->
+<div id="generator">
+    <div class="response">test</div>
+</div>
+
+<!-- Sandbox -->
+<div id="sandbox">
+</div>
+
+</body>
+</html>
