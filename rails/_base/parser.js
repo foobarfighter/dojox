@@ -73,6 +73,7 @@ dojo.provide("dojox.rails._base.parser");
   dr.AttributeParser = {
     TrueFalse:        function(v) { return v == "true" || v == true },
     ThrowUnsupported: function(v) { throw new Error("'data-" + v + "' is unsupported") },
-    Code:             function(v) { return eval("(" + v + ")"); }
+    Code:             function(v) { return eval("(" + v + ")"); },
+    Float:          function(v) { return parseFloat(v); }
   };
 })();

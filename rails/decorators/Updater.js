@@ -10,7 +10,7 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
   constructor: function(domNode){
     this._updaterArgs = {};
 
-    var attributes = this._parseAttributes(this.domNode);
+    var attributes = this._parseAttributes(this.domNode); //TODO: Remove this line.  this._parseAttributes called in superclass
     this._updaterArgs = this._mapAttributes(attributes, dojox.rails.decorators._UpdaterArgMap);
     this._connectUpdateHandlers();
   },
@@ -84,8 +84,6 @@ dojo.declare("dojox.rails.decorators.Updater", dojox.rails.decorators.Request, {
     "before":	 "before",
     "after":	 "after"
   };
-
-  var parseTrueFalse = function(v) { return v == "true" || v == true };
 
   drd._UpdaterArgMap = new drd.ArgMap({
     "position": 	      [ "place", function(v) { return insertionMap[v] }],

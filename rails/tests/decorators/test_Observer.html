@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+	    djConfig="isDebug: true, parseOnLoad: false"></script>
+    <!--<script type="text/javascript" src="plugd-1.3.0.min.js"></script>-->
+
+	<script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+		dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers")
+        dojo.require("dojox.rails.decorators.Observer");
+
+        dojo.declare("dojox.rails.tests.decorators.ObserverImpl",
+            dojox.rails.decorators.Observer,
+            {
+                registerObserved: function() {
+                },
+
+                getValue: function(observed){
+                    return 1;
+                }
+            }
+        );
+
+        function testCallback(value){
+            console.debug("testCallback called with ", value);
+        }
+
+        var drd = dojox.rails.decorators;
+        var drtd = dojox.rails.tests.decorators;
+        var observer = null;
+
+        doh.register("dojox.rails.tests.decorators.Observer", [
+            {
+                name: "Test abstract class",
+                runTest: function(t){
+                    var expectedMessage = /getValue: not implemented/;
+                    try {
+                        new drd.Observer("test_unimplemented_observer");
+                        t.t(false, "Unimplemented observer should have thrown an exception");
+                    }catch(e){
+                        t.t(e.message.match(expectedMessage) != null, "Expected exception to match: " + expectedMessage + ", but was " + e.message);
+                    }
+                }
+            },
+			{
+				name: "Test parse",
+                tearDown: function() {
+                    observer.stop();
+                },
+				runTest: function(t) {
+                    observer = new drtd.ObserverImpl("test_event");
+                    t.is("test_input", observer._observerArgs.observed);
+                    t.is(testCallback, observer._observerArgs.observerCallback);
+                    t.is(-1, observer._observerArgs.frequency);
+				}
+            },
+            {
+                name: "Test timed observer",
+                tearDown: function() {
+                    observer.stop();
+                },
+                runTest: function(t){
+                    t.mock(dojo.global, "testCallback");
+
+                    observer = new drtd.ObserverImpl("test_timed");
+                    var d = new doh.Deferred();
+                    setTimeout(function() {
+                        d.callback(t.assertMock(dojo.global.testCallback, 1));
+                    }, 100);
+                    return d;
+                }
+            },
+            {
+                name: "Test event observer",
+                runTest: function(t){
+                    
+                }
+            }
+		]);
+
+        dojo.addOnLoad(function() {
+            doh.run();
+        });
+	</script>
+</head>
+<body>
+
+<!-- Fixtures -->
+<script type="application/json" id="test_unimplemented_observer" data-js-type="observer_impl" data-observed="test_input"></script>
+<script type="application/json" id="test_timed" data-js-type="observer_impl" data-observed="test_input" data-frequency="0.06" data-observer-code="testCallback"></script>
+<script type="application/json" id="test_event" data-js-type="observer_impl" data-observed="test_input" data-frequency="-1" data-observer-code="testCallback"></script>
+
+</body>
+</html>
