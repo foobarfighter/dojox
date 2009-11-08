@@ -5,42 +5,43 @@ dojo.declare("dojox.rails.decorators.Observer",
   dojox.rails.decorators.Updater, {
 
 	constructor: function(node) {
-		if (!this.getValue){throw new Error("getValue: not implemented");}
 		this._observerArgs = {};
 
 		var attributes = this._parseAttributes(this.domNode);
 		this._observerArgs = this._mapAttributes(attributes, dojox.rails.decorators._ObserverArgMap);
 
-		this._connectObserverHandlers();
-		if (this._observerArgs.frequency && this._observerArgs.frequency > 0){
-			this.start();
-		}else{
-			// event
+		this._targets = [];
+		this.register();
+		this._lastValue = this.getValue();
+	},
+
+	register: function() {
+		this.throwUnimplemented("register");
+	},
+
+	getValue: function() {
+		this.throwUnimplemented("getValue");
+	},
+
+	onObservation: function(value, lastValue){
+		this._observerArgs.callback(value, lastValue);
+	},
+
+	onEvent: function(){
+		var v = this.getValue();
+		if (this._lastValue != v){
+			this.onObservation(v, this._lastValue);
+			this._lastValue = v;
 		}
 	},
 
-	onObservation: function(value){
+	registerListener: function(listenerClass, arg){
+		var callback = dojo.hitch(this, "onEvent");
+		this._targets.push(new listenerClass(callback, arg));
 	},
 
-	start: function(){
-		this.timer = setInterval(this._createListener(), this._observerArgs.frequency*1000);
-	},
-
-	stop: function(){
-		clearInterval(this.timer);
-	},
-
-	_connectObserverHandlers: function(){
-		if (this._observerArgs.observerCallback){
-			this._connects.push(dojo.connect(this, "onObservation", this._observerArgs.observerCallback));
-			// TODO: connect updater stuff?  should we be inheriting from an updater?
-		}
-	},
-
-	_createListener: function(){
-		return dojo.hitch(this, function(){
-			this.onObservation(this.getValue());
-		});
+	getTargets: function(){
+		return this._targets;
 	}
 });
 
@@ -51,7 +52,79 @@ dojo.declare("dojox.rails.decorators.Observer",
 
   drd._ObserverArgMap = new drd.ArgMap({
 		"observed":					"observed",
-		"observer-code":		["observerCallback", drap.Code],
-		"frequency":				drap.Float
+		"observer-code":		["callback", drap.Code],
+		"frequency":				["frequency", function(v){return drap.Float(v)*1000}]
   });
 })();
+
+
+
+/**
+
+ PeriodicalExecuter()
+ ElementListener()
+
+
+ class Observer {
+ 	_listeners
+
+ 	abstract -- register;
+ 	abstract -- getValue;
+
+ 	constructor: function(node){
+ 		parseAttributes
+ 		mapAttributes
+ 		register
+ 	}
+
+ 	onObservation:function(v){
+ 		this._observerArgs.callback(v);
+ 	}
+
+ 	registerTimedListener: function(interval){
+ 		_listeners.push(new PeriodicalExecuter(interval, onEvent))
+  }
+
+ 	registerElementChangeListener: function(field){
+ 		_listeners.push(new ElementChangeListener(field, onEvent));
+ 	}
+
+ 	onEvent: function(){
+ 		if (lastValue != (v = getValue())){
+ 			this.onObservation(v)
+ 			lastValue = v;
+ 		}
+ 	}
+ }
+
+ class FormObserver {
+ 	register: function() {
+		if interval
+			registerTimedListener(interval)
+ 		else
+ 			foreach field {
+ 				registerElementChangeListener(field)
+ 			}
+  }
+
+ 	getValue: function() {
+ 		return formValue;
+ 	}
+ }
+
+ ******
+
+ class FieldObserver {
+ 	register: function(node) {
+		if interval
+			_registerTimedListener(interval)
+ 		else
+ 		  _registerElementChangeListener(field)
+  }
+
+ 	getValue: function(){
+ 		return fieldValue
+ 	}
+ }
+
+ */

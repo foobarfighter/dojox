@@ -3,6 +3,10 @@ dojo.provide("dojox.rails.decorators.common");
 dojo.declare("dojox.rails.decorators.Base", null, {
 	constructor: function(node) {
 		this.domNode = dojo.byId(node);
+	},
+
+	throwUnimplemented: function(feature){
+		throw new Error(feature + ": not implemented");
 	}
 });
 

@@ -16,11 +16,15 @@
         dojo.declare("dojox.rails.tests.decorators.ObserverImpl",
             dojox.rails.decorators.Observer,
             {
-                registerObserved: function() {
+                register: function() {
+                },
+
+                setValue: function(v){
+                    this._getValue = v;
                 },
 
                 getValue: function(observed){
-                    return 1;
+                    return this._getValue || 0;
                 }
             }
         );
@@ -31,53 +35,55 @@
 
         var drd = dojox.rails.decorators;
         var drtd = dojox.rails.tests.decorators;
-        var observer = null;
 
         doh.register("dojox.rails.tests.decorators.Observer", [
-            {
-                name: "Test abstract class",
-                runTest: function(t){
-                    var expectedMessage = /getValue: not implemented/;
-                    try {
-                        new drd.Observer("test_unimplemented_observer");
-                        t.t(false, "Unimplemented observer should have thrown an exception");
-                    }catch(e){
-                        t.t(e.message.match(expectedMessage) != null, "Expected exception to match: " + expectedMessage + ", but was " + e.message);
-                    }
-                }
-            },
 			{
 				name: "Test parse",
-                tearDown: function() {
-                    observer.stop();
-                },
 				runTest: function(t) {
-                    observer = new drtd.ObserverImpl("test_event");
+                    var observer = new drtd.ObserverImpl("test_observer");
                     t.is("test_input", observer._observerArgs.observed);
-                    t.is(testCallback, observer._observerArgs.observerCallback);
-                    t.is(-1, observer._observerArgs.frequency);
+                    t.is(testCallback, observer._observerArgs.callback);
+                    t.is(60, observer._observerArgs.frequency);
 				}
             },
             {
-                name: "Test timed observer",
-                tearDown: function() {
-                    observer.stop();
-                },
+                name: "Test registerListener",
                 runTest: function(t){
-                    t.mock(dojo.global, "testCallback");
+                    function TestListener(callback, arg1){
+                        this.callback = callback;
+                        this.arg1 = arg1;
+                    }
 
-                    observer = new drtd.ObserverImpl("test_timed");
-                    var d = new doh.Deferred();
-                    setTimeout(function() {
-                        d.callback(t.assertMock(dojo.global.testCallback, 1));
-                    }, 100);
-                    return d;
+                    var observer = new drtd.ObserverImpl("test_observer");
+                    observer.registerListener(TestListener, "foo");
+                    var targets = observer.getTargets();
+                    t.t(targets[0].constructor == TestListener);
+                    t.t(targets[0].arg1 == "foo");
                 }
             },
             {
-                name: "Test event observer",
+                name: "Test onObservation",
+                runTest: function(t) {
+                    t.mock(null, "testCallback");
+                    var observer = new drtd.ObserverImpl("test_observer");
+                    observer.onObservation("foo");
+                    t.assertMock(testCallback, 1);
+                }
+            },
+            {
+                name: "Test onEvent",
                 runTest: function(t){
-                    
+                    var observer = new drtd.ObserverImpl("test_observer");
+                    t.mock(observer, "onObservation");
+                    observer.onEvent();
+                    t.assertMock(observer.onObservation, 0);
+
+                    observer.setValue("bar");
+                    observer.onEvent();
+                    t.assertMock(observer.onObservation, 1);
+
+                    observer.onEvent();
+                    t.assertMock(observer.onObservation, 1);
                 }
             }
 		]);
@@ -90,9 +96,8 @@
 <body>
 
 <!-- Fixtures -->
-<script type="application/json" id="test_unimplemented_observer" data-js-type="observer_impl" data-observed="test_input"></script>
-<script type="application/json" id="test_timed" data-js-type="observer_impl" data-observed="test_input" data-frequency="0.06" data-observer-code="testCallback"></script>
-<script type="application/json" id="test_event" data-js-type="observer_impl" data-observed="test_input" data-frequency="-1" data-observer-code="testCallback"></script>
+<script type="application/json" id="test_observer" data-js-type="observer_impl" data-observed="test_input" data-frequency="0.06" data-observer-code="testCallback"></script>
+<script type="application/json" id="test_unimplemented_observer" data-js-type="observer" data-observed="test_input"></script>
 
 </body>
 </html>
