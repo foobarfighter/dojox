@@ -42,6 +42,7 @@ dojo.declare("dojox.rails.decorators.Observer",
 
 	registerListener: function(listenerClass, arg){
 		var callback = dojo.hitch(this, "onEvent");
+		if (this._listener){this._listener.stop();}
 		this._listener = new listenerClass(callback, arg);
 		this._listener.listen();
 	},

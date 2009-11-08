@@ -51,7 +51,7 @@ dojo.declare("dojox.rails.listeners.ElementChangeListener",
 			default:
 				evtType = 'onchange';
 		}
-		this._connects.push(dojo.connect(el, evtType, this, "trigger"));
+		this._connect = dojo.connect(el, evtType, this, "trigger");
 	},
 
 	stop: function(){

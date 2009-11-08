@@ -5,25 +5,91 @@
     <script type="text/javascript" src="../../../dojo/dojo.js"
             djConfig="isDebug: true, parseOnLoad: true"></script>
     <script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+
         dojo.require("doh.runner");
         dojo.require("dojox.rails.tests.helpers");
 
         dojo.require("dojox.rails.listeners");
 
-        var drd = dojox.rails.decorators;
-
+        var drl = dojox.rails.listeners;
         doh.register("dojox.rails.tests.decorators.listeners.TimerListener", [
             {
+                name: "Test timer",
+                runTest: function(t){
+                    var self = this;
+                    self.cb = function(){}
+
+                    t.mock(self, "cb");
+                    var listener = new drl.TimerListener(self.cb, 50);
+                    var d = new dojo.Deferred();
+                    setTimeout(function(){
+                        d.callback(t.assertMock(self.cb));
+                        listener.stop();
+                    }, 90);
+                    listener.listen();
+                    return d;
+                }
             }
         ]);
 
         doh.register("dojox.rails.tests.decorators.listeners.ElementChangeListener", [
             {
+                name: "Test text input change",
+                runTest: function(t){
+                    this.cb = function(){}
+                    var node = dojo.byId("test_text")
+
+                    t.mock(this, "cb");
+                    var listener = new drl.ElementChangeListener(this.cb, "test_text");
+                    listener.listen();
+                    node.value = "changed value";
+                    dojo.trigger(node, "change");
+                    t.assertMock(this.cb);
+                }
+            },
+            {
+                name: "Test radio input change",
+                runTest: function(t){
+                    this.cb = function(){}
+                    var node = dojo.byId("test_radio2")
+
+                    t.mock(this, "cb");
+                    var listener = new drl.ElementChangeListener(this.cb, "test_radio2");
+                    listener.listen();
+                    dojo.trigger(node, "click");
+                    t.assertMock(this.cb);
+                }
+            },
+            {
+                name: "Test checkbox input change",
+                runTest: function(t){
+                    this.cb = function(){}
+                    var node = dojo.byId("test_checkbox2")
+
+                    t.mock(this, "cb");
+                    var listener = new drl.ElementChangeListener(this.cb, "test_checkbox2");
+                    listener.listen();
+                    dojo.trigger(node, "click");
+                    t.assertMock(this.cb);
+                }
             }
         ]);
 
         doh.register("dojox.rails.tests.decorators.listeners.FormChangeListener", [
             {
+                name: "Test form change",
+                runTest: function(t){
+                    this.cb = function(){}
+                    var node = dojo.byId("test_form_checkbox1")
+
+                    t.mock(this, "cb");
+                    var listener = new drl.FormChangeListener(this.cb, "test_form");
+                    listener.listen();
+                    dojo.trigger(node, "click");
+                    t.assertMock(this.cb);
+                }
             }
         ]);
 
@@ -32,6 +98,23 @@
 </head>
 <body>
 
+
+<form>
+    <input type="text" id="test_text" value="foo" />
+    <input type="radio" id="test_radio1" name="radio1" value="bar" checked="true" />
+    <input type="radio" id="test_radio2" name="radio1" value="baz" />
+    <input type="checkbox" id="test_checkbox1" name="checkbox1" value="bing" />
+    <input type="checkbox" id="test_checkbox2" name="checkbox2" value="bong" />
+</form>
+
+
+<form id="test_form">
+    <input type="text" id="test_form_text" value="foo" />
+    <input type="radio" id="test_form_radio1" name="radio1" value="bar" checked="true" />
+    <input type="radio" id="test_form_radio2" name="radio1" value="baz" />
+    <input type="checkbox" id="test_form_checkbox1" name="checkbox1" value="bing" />
+    <input type="checkbox" id="test_form_checkbox2" name="checkbox2" value="bong" />
+</form>
 
 
 </body>
