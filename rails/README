@@ -27,6 +27,10 @@ To run the browser tests, use this command:
 cd dojo/dojox/tests
 open runTests.html
 
+To create a build
+cd dojo/util/buildscripts
+./build.sh action=release profile=rails
+
 (You may need to run the web tests via a server)
 
 -------------------------------------------------------------------------------

@@ -59,7 +59,6 @@ dojo.declare("dojox.rails.decorators.Observer",
 	}
 });
 
-
 (function() {
   var drd = dojox.rails.decorators;
   var drap = dojox.rails.AttributeParser;
@@ -70,75 +69,3 @@ dojo.declare("dojox.rails.decorators.Observer",
 		"frequency":				["frequency", function(v){return drap.Float(v)*1000}]
   });
 })();
-
-
-
-/**
-
- PeriodicalExecuter()
- ElementListener()
-
-
- class Observer {
- 	_listeners
-
- 	abstract -- register;
- 	abstract -- getValue;
-
- 	constructor: function(node){
- 		parseAttributes
- 		mapAttributes
- 		register
- 	}
-
- 	onObservation:function(v){
- 		this._observerArgs.callback(v);
- 	}
-
- 	registerTimedListener: function(interval){
- 		_listeners.push(new PeriodicalExecuter(interval, onEvent))
-  }
-
- 	registerElementChangeListener: function(field){
- 		_listeners.push(new ElementChangeListener(field, onEvent));
- 	}
-
- 	onEvent: function(){
- 		if (lastValue != (v = getValue())){
- 			this.onObservation(v)
- 			lastValue = v;
- 		}
- 	}
- }
-
- class FormObserver {
- 	register: function() {
-		if interval
-			registerTimedListener(interval)
- 		else
- 			foreach field {
- 				registerElementChangeListener(field)
- 			}
-  }
-
- 	getValue: function() {
- 		return formValue;
- 	}
- }
-
- ******
-
- class FieldObserver {
- 	register: function(node) {
-		if interval
-			_registerTimedListener(interval)
- 		else
- 		  _registerElementChangeListener(field)
-  }
-
- 	getValue: function(){
- 		return fieldValue
- 	}
- }
-
- */
