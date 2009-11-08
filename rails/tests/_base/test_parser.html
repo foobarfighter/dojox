@@ -84,10 +84,10 @@
 						t.is(dojox.rails.decorators.RemoteForm.prototype.constructor, obj.constructor);
 					});
 					
-					var fieldObservers = dojox.rails.manager.findByType("field_observer");
-					t.is(1, fieldObservers.length);
-					dojo.forEach(fieldObservers, function(obj) {
-						t.is(dojox.rails.decorators.FieldObserver.prototype.constructor, obj.constructor);
+					var requests = dojox.rails.manager.findByType("request");
+					t.is(1, requests.length);
+					dojo.forEach(requests, function(obj) {
+						t.is(dojox.rails.decorators.Request.prototype.constructor, obj.constructor);
 					});
 				}
 			}
@@ -100,14 +100,14 @@
 </head>
 <body>
 
+<form>
+    <input id="fake_field" />
+</form>
+
 <form id="form_remote" method="post" data-js-type="remote">
 </form>
 
-<script type="application/json" data-js-type="field_observer">
-// <![CDATA[
-	{ "url": "/some/url" }
-// ]]>
-</script>
+<script type="application/json" data-js-type="request"></script>
 
 <div id="node_that_exists_but_is_not_a_decorator"></div>
 

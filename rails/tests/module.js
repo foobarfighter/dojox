@@ -7,6 +7,8 @@ try{
   doh.registerUrl("dojox.rails.tests.decorators.Request", dojo.moduleUrl("dojox", "rails/tests/decorators/test_Request.html"));
   doh.registerUrl("dojox.rails.tests.decorators.Updater", dojo.moduleUrl("dojox", "rails/tests/decorators/test_Updater.html"));
   doh.registerUrl("dojox.rails.tests.decorators.Observer", dojo.moduleUrl("dojox", "rails/tests/decorators/test_Observer.html"));
+  doh.registerUrl("dojox.rails.tests.decorators.FieldObserver", dojo.moduleUrl("dojox", "rails/tests/decorators/test_FieldObserver.html"));
+  doh.registerUrl("dojox.rails.tests.decorators.FormObserver", dojo.moduleUrl("dojox", "rails/tests/decorators/test_FormObserver.html"));
   doh.registerUrl("dojox.rails.tests.decorators.RemoteLink", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteLink.html"));
 }catch(e){
 	doh.debug(e);
