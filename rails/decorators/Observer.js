@@ -1,5 +1,6 @@
 dojo.provide("dojox.rails.decorators.Observer");
 dojo.require("dojox.rails.decorators.Updater");
+dojo.require("dojox.rails.listeners");
 
 dojo.declare("dojox.rails.decorators.Observer",
   dojox.rails.decorators.Updater, {
@@ -10,13 +11,17 @@ dojo.declare("dojox.rails.decorators.Observer",
 		var attributes = this._parseAttributes(this.domNode);
 		this._observerArgs = this._mapAttributes(attributes, dojox.rails.decorators._ObserverArgMap);
 
-		this._targets = [];
+		this._listener = null;
 		this.register();
 		this._lastValue = this.getValue();
 	},
 
 	register: function() {
-		this.throwUnimplemented("register");
+		this._register(this._observerArgs.frequency, this._observerArgs.observed);
+	},
+
+	listenerClass: function(){
+		this.throwUnimplemented("listenerClass");
 	},
 
 	getValue: function() {
@@ -37,11 +42,20 @@ dojo.declare("dojox.rails.decorators.Observer",
 
 	registerListener: function(listenerClass, arg){
 		var callback = dojo.hitch(this, "onEvent");
-		this._targets.push(new listenerClass(callback, arg));
+		this._listener = new listenerClass(callback, arg);
+		this._listener.listen();
 	},
 
-	getTargets: function(){
-		return this._targets;
+	getListener: function(){
+		return this._listener;
+	},
+
+	_register: function(frequency, observed){
+		if (frequency){
+			this.registerListener(dojox.rails.listeners.TimerListener, frequency);
+		}else{
+			this.registerListener(this.listenerClass(), observed);
+		}
 	}
 });
 

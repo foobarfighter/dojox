@@ -1,8 +1,8 @@
 dojo.provide("dojox.rails.listeners");
 
-dojo.declare("dojox.rails.listeners.Listener", {
+dojo.declare("dojox.rails.listeners.Listener", null, {
 	constructor: function(callback, target){
-		this._callback;
+		this._callback = callback;
 	},
 
 	trigger: function(){
@@ -13,13 +13,15 @@ dojo.declare("dojox.rails.listeners.Listener", {
 	stop: function(){}
 });
 
-dojo.declare("dojox.rails.listeners.TimerListener", {
+dojo.declare("dojox.rails.listeners.TimerListener",
+	dojox.rails.listeners.Listener,
+{
 	constructor: function(callback, period){
 		this._period = period;
 	},
 
 	listen: function(){
-		this._interval = setInterval(dojo.hitch(this, trigger), this._period);
+		this._interval = setInterval(dojo.hitch(this, "trigger"), this._period);
 	},
 
 	stop: function(){
@@ -27,10 +29,12 @@ dojo.declare("dojox.rails.listeners.TimerListener", {
 	}
 });
 
-dojo.declare("dojox.rails.listeners.ElementChangeListener", {
+dojo.declare("dojox.rails.listeners.ElementChangeListener",
+	dojox.rails.listeners.Listener,
+{
 	constructor: function(callback, element){
-		this._element = element;
-		this._connects = [];
+		this._element = dojo.byId(element);
+		this._connect = null;
 	},
 
 	listen: function(){
@@ -51,22 +55,24 @@ dojo.declare("dojox.rails.listeners.ElementChangeListener", {
 	},
 
 	stop: function(){
-		dojo.forEach(this._connects, function(c){
-			dojo.disconnect(c);
-		});
+		dojo.disconnect(this._connect);
 	}
 });
 
-dojo.declare("dojox.rails.listeners.FormChangeListener", {
+dojo.declare("dojox.rails.listeners.FormChangeListener",
+	dojox.rails.listeners.Listener,
+{
 	constructor: function(callback, form){
-		this._form = form;
+		this._form = dojo.byId(form);
 		this._listeners = []
 	},
 
 	listen: function(){
 		var cb = dojo.hitch(this, "trigger");
 		dojo.forEach(this._form.elements, function(node){
-			this._listeners.push(new dojox.rails.decorators.listeners.ElementChangeListener(cb, node));
+			var listener = new dojox.rails.listeners.ElementChangeListener(cb, node);
+			this._listeners.push(listener);
+			listener.listen();
 		}, this);
 	},
 
@@ -74,5 +80,6 @@ dojo.declare("dojox.rails.listeners.FormChangeListener", {
 		dojo.forEach(this._listeners, function(listener){
 			listener.stop();
 		});
+		this._listeners = [];
 	}
 });

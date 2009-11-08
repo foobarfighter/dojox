@@ -12,11 +12,25 @@
 		dojo.require("doh.runner");
         dojo.require("dojox.rails.tests.helpers")
         dojo.require("dojox.rails.decorators.Observer");
+        dojo.require("dojox.rails.listeners");
+
+        dojo.declare("dojox.rails.tests.listeners.ListenerStub",
+            dojox.rails.listeners.Listener,
+            {
+                listen: function(){ this.listening = true; },
+                stop: function() { this.listening = false; }
+            }
+        );
 
         dojo.declare("dojox.rails.tests.decorators.ObserverImpl",
             dojox.rails.decorators.Observer,
             {
-                register: function() {
+                // Override original function called via ctor
+                register: function(){
+                },
+
+                listenerClass: function(){
+                    return dojox.rails.tests.listeners.ListenerStub;
                 },
 
                 setValue: function(v){
@@ -40,7 +54,7 @@
 			{
 				name: "Test parse",
 				runTest: function(t) {
-                    var observer = new drtd.ObserverImpl("test_observer");
+                    var observer = new drtd.ObserverImpl("test_timed_observer");
                     t.is("test_input", observer._observerArgs.observed);
                     t.is(testCallback, observer._observerArgs.callback);
                     t.is(60, observer._observerArgs.frequency);
@@ -52,13 +66,29 @@
                     function TestListener(callback, arg1){
                         this.callback = callback;
                         this.arg1 = arg1;
+
+                        this.listen = function(){}
                     }
 
                     var observer = new drtd.ObserverImpl("test_observer");
                     observer.registerListener(TestListener, "foo");
-                    var targets = observer.getTargets();
-                    t.t(targets[0].constructor == TestListener);
-                    t.t(targets[0].arg1 == "foo");
+                    var listener = observer.getListener();
+                    t.t(listener.constructor == TestListener);
+                    t.t(listener.arg1 == "foo");
+                }
+            },
+            {
+                name: "Test _register",
+                runTest: function(t){
+                    var observer = new drtd.ObserverImpl("test_observer");
+                    observer._register(1000, "some_node");
+                    t.is(dojox.rails.listeners.TimerListener, observer.getListener().constructor);
+                    t.is(1000, observer.getListener()._period);
+                    observer.getListener().stop();
+
+                    observer._register(0, "some_node");
+                    t.is(dojox.rails.tests.listeners.ListenerStub, observer.getListener().constructor);
+                    t.t(observer.getListener().listening);
                 }
             },
             {
@@ -96,8 +126,8 @@
 <body>
 
 <!-- Fixtures -->
-<script type="application/json" id="test_observer" data-js-type="observer_impl" data-observed="test_input" data-frequency="0.06" data-observer-code="testCallback"></script>
-<script type="application/json" id="test_unimplemented_observer" data-js-type="observer" data-observed="test_input"></script>
+<script type="application/json" id="test_observer" data-js-type="observer_impl" data-observed="test_input" data-observer-code="testCallback"></script>
+<script type="application/json" id="test_timed_observer" data-js-type="observer_impl" data-observed="test_input" data-frequency="0.06" data-observer-code="testCallback"></script>
 
 </body>
 </html>
