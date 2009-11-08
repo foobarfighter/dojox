@@ -1,7 +1,7 @@
-dojo.provide("dojox.rails.tests.strings");
+dojo.provide("dojox.rails.tests._base.strings");
 dojo.require("dojox.rails");
 
-doh.register("dojox.rails.tests.strings", 
+doh.register("dojox.rails.tests._base.strings", 
 	[
 		{
 			name: "camelize",
