@@ -29,7 +29,9 @@ dojo.declare("dojox.rails.decorators.Observer",
 	},
 
 	onObservation: function(value, lastValue){
-		this._observerArgs.callback(value, lastValue);
+		if (this._observerArgs.callback){									// FIXME: Add test
+			this._observerArgs.callback(value, lastValue);
+		}
 	},
 
 	onEvent: function(){
@@ -49,6 +51,14 @@ dojo.declare("dojox.rails.decorators.Observer",
 
 	getListener: function(){
 		return this._listener;
+	},
+
+	//FIXME: Add tests
+	destroy: function(){
+		this._listener.stop();
+		this._listener = null;
+		this._observerArgs = null;
+		this._lastValue = null;
 	},
 
 	_register: function(frequency, observed){

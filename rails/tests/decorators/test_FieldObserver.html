@@ -3,28 +3,101 @@
 <head>
 	<title></title>
 	<script type="text/javascript" src="../../../../dojo/dojo.js"
-	    djConfig="isDebug: true, parseOnLoad: true"></script>
+	    djConfig="isDebug: true, parseOnLoad: false"></script>
 	<script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+
 		dojo.require("doh.runner");
 		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.FieldObserver");
 
+        function setup(){
+            dojo.global.testSuccess = function(){
+                console.debug("testSuccess callback", arguments);
+            }
+
+            dojo.global.testFailure = function(){
+                console.debug("testFailure callback", arguments);
+            }
+
+            dojo.global.testCallback = function(){
+                console.debug("testCallback callback", arguments);
+            }
+        }
+
 		doh.register("dojox.rails.tests.decorators.FieldObserver", [
 			{
-				name: "SomeTest",
+				name: "Event based field observer acting as an updater",
 				runTest: function(t) {
-					t.t(true);
+					var observer = new dojox.rails.decorators.FieldObserver("test_updater_params");
+                    t.is(dojox.rails.decorators.FieldObserver.constructor, observer.listenerClass().constructor);
+
+                    var node = dojo.byId("test_text1");
+                    node.value = "changed value";
+                    dojo.trigger(node, "change");
+
+                    var d = new doh.Deferred();
+                    var successNode = dojo.byId("update_success");
+                    setTimeout(function(){
+                        var matches = successNode.innerHTML.match(/basic markup/);
+                        d.callback(matches && matches.length > 0);
+                        observer.destroy();
+                    }, 100);
+                    return d;
 				}
 			}
 		]);
-		
-		doh.run();
+
+
+
+        dojo.addOnLoad(function(){
+            doh.run();
+        });
 	</script>
 </head>
 <body>
 
-<form method="post" data-remote="true">
+<form>
+    <input type="text" id="test_text1" name="some_field" value="foo" />
+    <input type="text" id="test_text2" name="some_field" value="foo" />
+    <input type="text" id="test_text3" name="some_field" value="foo" />
+    <input type="text" id="test_text4" name="some_field" value="foo" />
+    <input type="text" id="test_text5" name="some_field" value="foo" />
+
+    <script type="application/json" data-js-type="field_observer" id="test_request_params"
+        data-observed="test_text1"
+        data-url="../fixtures/ajax_basic.html"
+        data-success-code="testSuccess">
+    </script>
+
+    <script type="application/json" data-js-type="field_observer" id="test_failure"
+        data-observed="test_text2"
+        data-url="../fixtures/fail.html"
+        data-failure-code="testFailure">
+    </script>
+
+    <script type="application/json" data-js-type="field_observer" id="test_updater_params"
+        data-observed="test_text3"
+        data-method="post"
+        data-url="../fixtures/ajax_basic.html"
+        data-update-success="#update_success"
+        data-position="top">
+    </script>
+
+    <script type="application/json" data-js-type="field_observer" id="test_callback"
+        data-observed="test_text4"
+        data-observer-code="testCallback">
+    </script>
+
+    <script type="application/json" data-js-type="field_observer" id="test_timer_params"
+        data-observed="test_text5"
+        data-interval="0.2"
+        data-observer-code="testCallback">
+    </script>
 </form>
+
+<div id="update_success">foo blah</div>
 
 </body>
 </html>

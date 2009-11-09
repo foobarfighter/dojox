@@ -49,3 +49,7 @@ OR
 </script>
 
 -------------------------------------------------------------------------------
+TODO
+
+- Add decorator lifecycle.  We shouldn't be parsing attributes in every
+  constructor.
