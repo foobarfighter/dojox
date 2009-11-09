@@ -5,9 +5,6 @@ dojo.require("dojox.rails.listeners");
 dojo.declare("dojox.rails.decorators.FieldObserver",
 	dojox.rails.decorators.Observer, {
 
-	constructor: function(){
-	},
-
 	listenerClass: function() {
 		return dojox.rails.listeners.ElementChangeListener;
 	},
