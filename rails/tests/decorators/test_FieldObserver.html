@@ -9,10 +9,14 @@
         dojo.require("plugd.trigger");
 
 		dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");        
 		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.FieldObserver");
 
         function setup(){
+            if (observer){observer.destroy();}
+            dojo.byId("update_success").innerHTML = "";
+
             dojo.global.testSuccess = function(){
                 console.debug("testSuccess callback", arguments);
             }
@@ -26,16 +30,57 @@
             }
         }
 
+        function triggerChange(node){
+            var node = dojo.byId(node);
+            node.value = "changed value";
+            dojo.trigger(node, "change");
+            return node;
+        }
+
+        function deferredMock(t, observer, func) {
+            var d = new doh.Deferred();
+            setTimeout(function(){
+                observer.destroy();
+                d.callback(t.assertMock(func));
+            }, 100);
+            return d;
+        }
+
+        var drd = dojox.rails.decorators;
+        var observer;
 		doh.register("dojox.rails.tests.decorators.FieldObserver", [
-			{
+            {
+                setUp: setup,
+                name: "Event based field observer acting as a successful request",
+                runTest: function(t){
+                    t.mock(dojo.global, "testSuccess");
+                    observer = new drd.FieldObserver("test_request_params");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
+
+                    triggerChange(observer.getObserved());
+                    return deferredMock(t, observer, dojo.global.testSuccess);
+                }
+            },
+            {
+                setUp: setup,
+                name: "Event based field observer acting as a failed request",
+                runTest: function(t){
+                    t.mock(dojo.global, "testFailure");
+                    observer = new drd.FieldObserver("test_failure_params");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
+
+                    triggerChange(observer.getObserved());
+                    return deferredMock(t, observer, dojo.global.testFailure);
+                }
+            },
+            {
+                setUp: setup,
 				name: "Event based field observer acting as an updater",
 				runTest: function(t) {
-					var observer = new dojox.rails.decorators.FieldObserver("test_updater_params");
-                    t.is(dojox.rails.decorators.FieldObserver.constructor, observer.listenerClass().constructor);
+					observer = new drd.FieldObserver("test_updater_params");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
 
-                    var node = dojo.byId("test_text1");
-                    node.value = "changed value";
-                    dojo.trigger(node, "change");
+                    triggerChange(observer.getObserved());
 
                     var d = new doh.Deferred();
                     var successNode = dojo.byId("update_success");
@@ -46,7 +91,31 @@
                     }, 100);
                     return d;
 				}
-			}
+			},
+            {
+                setUp: setup,
+                name: "Event based field observer with callback",
+                runTest: function(t){
+                    t.mock(dojo.global, "testCallback");
+                    observer = new drd.FieldObserver("test_callback");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
+
+                    triggerChange(observer.getObserved());
+                    return deferredMock(t, observer, dojo.global.testCallback);
+                }
+            },
+            {
+                setUp: setup,
+                name: "Timer based field observer with callback",
+                runTest: function(t){
+                    t.mock(dojo.global, "testCallback");
+                    observer = new drd.FieldObserver("test_timer_params");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.TimerListener");
+
+                    observer.getObserved().value = "sumpin new";
+                    return deferredMock(t, observer, dojo.global.testCallback);
+                }
+            },
 		]);
 
 
@@ -71,7 +140,7 @@
         data-success-code="testSuccess">
     </script>
 
-    <script type="application/json" data-js-type="field_observer" id="test_failure"
+    <script type="application/json" data-js-type="field_observer" id="test_failure_params"
         data-observed="test_text2"
         data-url="../fixtures/fail.html"
         data-failure-code="testFailure">
@@ -92,7 +161,7 @@
 
     <script type="application/json" data-js-type="field_observer" id="test_timer_params"
         data-observed="test_text5"
-        data-interval="0.2"
+        data-frequency="0.070"
         data-observer-code="testCallback">
     </script>
 </form>

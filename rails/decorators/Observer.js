@@ -49,13 +49,17 @@ dojo.declare("dojox.rails.decorators.Observer",
 		this._listener.listen();
 	},
 
+	getObserved: function(){
+		return dojo.byId(this._observerArgs.observed);
+	},
+
 	getListener: function(){
 		return this._listener;
 	},
 
 	//FIXME: Add tests
 	destroy: function(){
-		this._listener.stop();
+		if (this._listener){this._listener.stop();}
 		this._listener = null;
 		this._observerArgs = null;
 		this._lastValue = null;

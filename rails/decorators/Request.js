@@ -63,7 +63,7 @@ dojo.declare("dojox.rails.decorators.Request",
   _connectHandlers: function(callbacks){
     var handlers = ["onSuccess", "onFailure", "onComplete"];
     dojo.forEach(handlers, function(h){
-      if (!callbacks[h]){return;}
+			if (!callbacks[h]){return;}
       this._connects.push(dojo.connect(this, h, this, callbacks[h]));
     }, this);
   },
