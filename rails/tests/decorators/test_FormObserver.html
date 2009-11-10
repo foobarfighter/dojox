@@ -5,26 +5,110 @@
 	<script type="text/javascript" src="../../../../dojo/dojo.js"
 	    djConfig="isDebug: true, parseOnLoad: false"></script>
 	<script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+
 		dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");        
 		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.FormObserver");
 
+        function setup(){
+            if (observer){observer.destroy();}
+
+            dojo.global.testSuccess = function(){
+                console.debug("testSuccess callback", arguments);
+            }
+
+            dojo.global.testFailure = function(){
+                console.debug("testFailure callback", arguments);
+            }
+
+            dojo.global.testCallback = function(){
+                console.debug("testCallback callback", arguments);
+            }
+        }
+
+        function triggerChange(node, changeValue){
+            var node = dojo.byId(node);
+            if (changeValue){node.value = node.value + "-";}
+            dojo.trigger(node, "change");
+            return node;
+        }
+
+        function triggerClick(node){
+            var node = dojo.byId(node);
+            dojo.trigger(node, "click");
+            return node;
+        }
+
+        var drd = dojox.rails.decorators;
+        var observer;
 		doh.register("dojox.rails.tests.decorators.FormObserver", [
-			{
-				name: "SomeTest",
-				runTest: function(t) {
-					t.t(true);
-				}
-			}
+            {
+                setUp: setup,
+                name: "Form observations triggered only when the form values change",
+                runTest: function(t){
+                    t.mock(dojo.global, "testCallback");
+                    
+                    observer = new drd.FormObserver("test_base_observer");
+                    t.is(observer.getListener().declaredClass, "dojox.rails.listeners.FormChangeListener");
+
+                    t.mock(observer, "onEvent");
+                    t.mock(observer, "onObservation");
+
+                    triggerChange("test_text1");
+
+                    t.assertMock(observer.onEvent, 1);
+                    t.assertMock(observer.onObservation, 0);
+                    t.assertMock(dojo.global.testCallback, 0);
+
+                    triggerClick("test_radio2");
+
+                    t.assertMock(observer.onEvent, 2);
+                    t.assertMock(observer.onObservation, 1);
+                    t.assertMock(dojo.global.testCallback, 1);
+                }
+            },
+            {
+                setUp: setup,
+                name: "Test xhr call",
+                runTest: function(t){
+                    triggerClick("test_radio1");
+                    observer = new drd.FormObserver("test_xhr_observer");
+
+                    t.mock(dojo, "xhrGet");
+                    triggerChange("test_text1", true);
+                    t.assertMock(dojo.xhrGet);
+                    t.is(dojo.xhrGet.__mockArgs[0].content, { test_field: "foo-", radio_field: "bar"});
+                }
+            }
 		]);
 
-		doh.run();
+
+
+        dojo.addOnLoad(function(){
+            doh.run();
+        });
 	</script>
 </head>
 <body>
 
-<form method="post" data-remote="true">
+<form id="test_base_form">
+    <input type="text" id="test_text1" name="test_field" value="foo" />
+    <input type="radio" id="test_radio1" name="radio_field" value="bar" checked="true" />
+    <input type="radio" id="test_radio2" name="radio_field" value="baz" />
 </form>
+
+<script type="application/json" data-js-type="form_observer" id="test_base_observer"
+    data-observed="test_base_form"
+    data-observer-code="testCallback">
+</script>
+
+<script type="application/json" data-js-type="form_observer" id="test_xhr_observer"
+    data-observed="test_base_form"
+    data-url="../fixtures/ajax_basic.html">
+</script>
 
 </body>
 </html>

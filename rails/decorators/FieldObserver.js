@@ -9,6 +9,10 @@ dojo.declare("dojox.rails.decorators.FieldObserver",
 		return dojox.rails.listeners.ElementChangeListener;
 	},
 
+	compare: function(newValue, lastValue){
+		return newValue != lastValue;
+	},
+
 	onObservation: function(value, lastValue){
 		if (this._observerArgs.callback){
 			this._observerArgs.callback(value, lastValue);

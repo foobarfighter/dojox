@@ -30,9 +30,9 @@
             }
         }
 
-        function triggerChange(node){
+        function triggerChange(node, changeValue){
             var node = dojo.byId(node);
-            node.value = "changed value";
+            if (changeValue){node.value = node.value + "-";}
             dojo.trigger(node, "change");
             return node;
         }
@@ -57,7 +57,7 @@
                     observer = new drd.FieldObserver("test_request_params");
                     t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
 
-                    triggerChange(observer.getObserved());
+                    triggerChange(observer.getObserved(), true);
                     return deferredMock(t, observer, dojo.global.testSuccess);
                 }
             },
@@ -69,7 +69,7 @@
                     observer = new drd.FieldObserver("test_failure_params");
                     t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
 
-                    triggerChange(observer.getObserved());
+                    triggerChange(observer.getObserved(), true);
                     return deferredMock(t, observer, dojo.global.testFailure);
                 }
             },
@@ -80,7 +80,7 @@
 					observer = new drd.FieldObserver("test_updater_params");
                     t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
 
-                    triggerChange(observer.getObserved());
+                    triggerChange(observer.getObserved(), true);
 
                     var d = new doh.Deferred();
                     var successNode = dojo.byId("update_success");

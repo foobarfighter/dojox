@@ -24,6 +24,10 @@ dojo.declare("dojox.rails.decorators.Observer",
 		this.throwUnimplemented("listenerClass");
 	},
 
+	compare: function(newValue, lastValue){
+		this.throwUnimplemented("compare");
+	},
+
 	getValue: function() {
 		this.throwUnimplemented("getValue");
 	},
@@ -36,7 +40,7 @@ dojo.declare("dojox.rails.decorators.Observer",
 
 	onEvent: function(){
 		var v = this.getValue();
-		if (this._lastValue != v){
+		if (this.compare(v, this._lastValue)){
 			this.onObservation(v, this._lastValue);
 			this._lastValue = v;
 		}
