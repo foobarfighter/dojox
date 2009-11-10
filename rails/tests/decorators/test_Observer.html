@@ -29,6 +29,10 @@
                 register: function(){
                 },
 
+                compare: function(newValue, oldValue){
+                    return newValue != oldValue;
+                },
+
                 listenerClass: function(){
                     return dojox.rails.tests.listeners.ListenerStub;
                 },

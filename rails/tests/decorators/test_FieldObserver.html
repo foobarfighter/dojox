@@ -10,7 +10,6 @@
 
 		dojo.require("doh.runner");
         dojo.require("dojox.rails.tests.helpers");        
-		dojo.require("dojox.rails");
 		dojo.require("dojox.rails.decorators.FieldObserver");
 
         function setup(){
@@ -100,7 +99,7 @@
                     observer = new drd.FieldObserver("test_callback");
                     t.is(observer.getListener().declaredClass, "dojox.rails.listeners.ElementChangeListener");
 
-                    triggerChange(observer.getObserved());
+                    triggerChange(observer.getObserved(), true);
                     return deferredMock(t, observer, dojo.global.testCallback);
                 }
             },

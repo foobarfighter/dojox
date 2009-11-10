@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="../../../../dojo/dojo.js"
+	    djConfig="isDebug: true, parseOnLoad: false"></script>
+	<script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+
+		dojo.require("doh.runner");
+        dojo.require("dojox.rails.tests.helpers");
+		dojo.require("dojox.rails.decorators.PeriodicalExecuter");
+
+        function setup(){
+            if (executor){executor.destroy();}
+            dojo.global.testSuccess = function(){
+                console.debug("testSuccess callback", arguments);
+            }
+
+            dojo.global.testFailure = function(){
+                console.debug("testFailure callback", arguments);
+            }
+
+            dojo.global.testCallback = function(){
+                console.debug("testCallback callback", arguments);
+            }
+        }
+
+        function deferredMock(t, destroyable, func, times) {
+            var d = new doh.Deferred();
+            setTimeout(function(){
+                destroyable.destroy();
+                d.callback(t.assertMock(func, times));
+            }, 200);
+            return d;
+        }
+
+        var drd = dojox.rails.decorators;
+        var executor;
+		doh.register("dojox.rails.tests.decorators.PeriodicalExecuter", [
+            {
+                setUp: setup,
+                name: "Successful executer",
+                runTest: function(t){
+                    t.mock(dojo.global, "testSuccess");
+
+                    executor = new drd.PeriodicalExecuter("test_success_executer");
+                    t.is(executor.getListener().declaredClass, "dojox.rails.listeners.TimerListener");
+                    t.is(60, executor._executerArgs.frequency);
+
+                    // NOTE: The timer vs. deferred times don't completely add up due to network latency
+                    return deferredMock(t, executor, dojo.global.testSuccess, 2);
+                }
+            },
+            {
+                setUp: setup,
+                name: "Failed executer",
+                runTest: function(t){
+                    t.mock(dojo.global, "testFailure");
+
+                    executor = new drd.PeriodicalExecuter("test_failure_executer");
+                    t.is(executor.getListener().declaredClass, "dojox.rails.listeners.TimerListener");
+                    t.is(60, executor._executerArgs.frequency);
+
+                    // NOTE: The timer vs. deferred times don't completely add up due to network latency
+                    return deferredMock(t, executor, dojo.global.testFailure, 2);
+                }
+            }
+		]);
+
+        dojo.addOnLoad(function(){
+            doh.run();
+        });
+	</script>
+</head>
+<body>
+
+<script type="application/json" data-js-type="periodical_executer" id="test_success_executer"
+    data-url="../fixtures/ajax_basic.html"
+    data-frequency="0.06"
+    data-success-code="testSuccess">
+</script>
+
+<script type="application/json" data-js-type="periodical_executer" id="test_failure_executer"
+    data-url="../fixtures/ajax_fail.html"
+    data-frequency="0.06"
+    data-failure-code="testFailure">
+</script>
+
+</body>
+</html>

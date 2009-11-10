@@ -2,23 +2,43 @@ dojo.provide("dojox.rails.decorators.PeriodicalExecuter");
 dojo.require("dojox.rails.decorators.Updater");
 dojo.require("dojox.rails.listeners");
 
-// NOTE: This is not an observer because it doesn't observe anything.
-// It DOES have a TimerListener though
 dojo.declare("dojox.rails.decorators.PeriodicalExecuter",
 	[dojox.rails.decorators.Updater], {
 
-	// FIXME: This is basically "working" pseudo-code
 	constructor: function(node){
-		this._executerArgs = {};
-		this._executerArgs.interval = parseFloat(dojo.attr(node, "data-interval")) * 1000;
+		var attributes = this._parseAttributes(this.domNode);
+		this._executerArgs = this._mapAttributes(attributes, dojox.rails.decorators._ExecuterArgMap);
+		this.register();
+	},
 
-		var callback = dojo.hitch(this, "onEvent");
-		this._listener = new dojox.rails.listeners.TimerListener(callback, this._executerArgs.interval);
-		this._listener.listen();
+	register: function(){
+		this._register(this._executerArgs.frequency);
 	},
 
 	onEvent: function(){
 		this.exec();
-	}
+	},
 
+	getListener: function(){
+		return this._listener;
+	},
+
+	_register: function(frequency){
+		var callback = dojo.hitch(this, "onEvent");
+		this._listener = new dojox.rails.listeners.TimerListener(callback, frequency);
+		this._listener.listen();
+	},
+
+	destroy: function(){
+		if (this._listener){this._listener.stop();}
+	}
 });
+
+(function() {
+  var drd = dojox.rails.decorators;
+  var drap = dojox.rails.AttributeParser;
+
+  drd._ExecuterArgMap = new drd.ArgMap({
+		"frequency":				["frequency", function(v){return drap.Float(v)*1000}]
+  });
+})();
