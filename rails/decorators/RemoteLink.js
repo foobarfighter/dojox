@@ -9,7 +9,7 @@ dojo.declare("dojox.rails.decorators.RemoteLink",
     var href = dojo.attr(this.domNode, "href");
     if (!this._requestArgs.url && href){this._requestArgs.url = href;}
 
-    this._connectRemoteButtonHandlers();
+    this._connectRemoteHandlers();
 	},
 
   onClick: function(evt){
@@ -27,7 +27,7 @@ dojo.declare("dojox.rails.decorators.RemoteLink",
 		this.exec();
 	},
 
-	_connectRemoteButtonHandlers: function(){
+	_connectRemoteHandlers: function(){
     this._connects.push(dojo.connect(this.domNode, "onclick", this, "onClick"));
   }
 });

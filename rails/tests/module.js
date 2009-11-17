@@ -11,7 +11,8 @@ try{
   doh.registerUrl("dojox.rails.tests.decorators.FormObserver", dojo.moduleUrl("dojox", "rails/tests/decorators/test_FormObserver.html"));
   doh.registerUrl("dojox.rails.tests.decorators.RemoteLink", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteLink.html"));
   doh.registerUrl("dojox.rails.tests.decorators.RemoteButton", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteButton.html"));
-  doh.registerUrl("dojox.rails.tests.decorators.RemoteForm", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteForm.html"));
+	doh.registerUrl("dojox.rails.tests.decorators.RemoteSubmit", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteSubmit.html"));
+	doh.registerUrl("dojox.rails.tests.decorators.RemoteForm", dojo.moduleUrl("dojox", "rails/tests/decorators/test_RemoteForm.html"));
   doh.registerUrl("dojox.rails.tests.decorators.PeriodicalExecuter", dojo.moduleUrl("dojox", "rails/tests/decorators/test_PeriodicalExecuter.html"));
 }catch(e){
 	doh.debug(e);

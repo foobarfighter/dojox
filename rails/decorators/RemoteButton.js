@@ -4,7 +4,4 @@ dojo.require("dojox.rails.decorators.RemoteLink");
 
 dojo.declare("dojox.rails.decorators.RemoteButton",
   dojox.rails.decorators.RemoteLink, {
-
-	constructor: function(node) {
-	}
 });
