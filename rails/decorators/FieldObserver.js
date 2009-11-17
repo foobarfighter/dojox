@@ -10,7 +10,6 @@ dojo.declare("dojox.rails.decorators.FieldObserver",
 	},
 
 	compare: function(newValue, lastValue){
-		console.debug("-------------------------------> compare", newValue, lastValue);
 		return newValue != lastValue;
 	},
 
