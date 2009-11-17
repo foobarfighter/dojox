@@ -11,10 +11,10 @@ dojo.declare("dojox.rails.decorators.RemoteForm",
     if (!this._requestArgs.url && action){this._requestArgs.url = action;}
     if (method){this.setMethod(method);}
 
-		this._connectRemoteFormHandlers();
+		this._connectRemoteButtonHandlers();
 	},
 
-	_connectRemoteFormHandlers: function(){
+	_connectRemoteButtonHandlers: function(){
 		this._connects.push(dojo.connect(this.domNode, "onsubmit", this, "onSubmit"));
 	},
 

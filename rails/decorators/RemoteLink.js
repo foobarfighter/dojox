@@ -9,15 +9,25 @@ dojo.declare("dojox.rails.decorators.RemoteLink",
     var href = dojo.attr(this.domNode, "href");
     if (!this._requestArgs.url && href){this._requestArgs.url = href;}
 
-    this._connectRemoteFormHandlers();
+    this._connectRemoteButtonHandlers();
 	},
 
-  _connectRemoteFormHandlers: function(){
-    this._connects.push(dojo.connect(this.domNode, "onclick", this, "onClick"));
+  onClick: function(evt){
+		this._submit();
+    evt.preventDefault();
   },
 
-  onClick: function(evt){
-    this.exec();
-    evt.preventDefault();
+	destroy: function(){
+		dojo.forEach(this._connects, function(c){
+			dojo.disconnect(c);
+		});
+	},
+
+	_submit: function(){
+		this.exec();
+	},
+
+	_connectRemoteButtonHandlers: function(){
+    this._connects.push(dojo.connect(this.domNode, "onclick", this, "onClick"));
   }
 });
