@@ -14,26 +14,7 @@
 
         function setup(){
             if (executor){executor.destroy();}
-            dojo.global.testSuccess = function(){
-                console.debug("testSuccess callback", arguments);
-            }
-
-            dojo.global.testFailure = function(){
-                console.debug("testFailure callback", arguments);
-            }
-
-            dojo.global.testCallback = function(){
-                console.debug("testCallback callback", arguments);
-            }
-        }
-
-        function deferredMock(t, destroyable, func, times) {
-            var d = new doh.Deferred();
-            setTimeout(function(){
-                destroyable.destroy();
-                d.callback(t.assertMock(func, times));
-            }, 200);
-            return d;
+            createCommonCallbacks();
         }
 
         var drd = dojox.rails.decorators;

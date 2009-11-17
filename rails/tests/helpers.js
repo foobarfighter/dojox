@@ -70,3 +70,42 @@ doh.assertConnection = function(connects, obj, cbName) {
   });
   if (!found) throw new doh._AssertFailure("'" + cbName + "' callback was not connected");
 }
+
+function deferredMock(t, destroyable, func, times) {
+		var d = new doh.Deferred();
+		setTimeout(function(){
+				destroyable.destroy();
+				d.callback(t.assertMock(func, times));
+		}, 200);
+		return d;
+}
+
+function deferredQuery(t, query) {
+	var d = new t.Deferred();
+	setTimeout(function() {
+		d.callback(dojo.query(query).length == 1);
+	}, 200);
+	return d;
+}
+
+function resetSandbox(){
+	dojo.byId("sandbox").innerHTML = dojo.byId("generator").innerHTML;
+}
+
+function createCommonCallbacks() {
+	dojo.global.testSuccess = function(){
+			console.debug("testSuccess callback", arguments);
+	}
+
+	dojo.global.testFailure = function(){
+			console.debug("testFailure callback", arguments);
+	}
+
+	dojo.global.testComplete = function(){
+			console.debug("testComplete callback", arguments);
+	}
+	
+	dojo.global.testCallback = function(){
+			console.debug("testCallback callback", arguments);
+	}
+}

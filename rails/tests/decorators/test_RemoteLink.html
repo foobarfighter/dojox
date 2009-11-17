@@ -9,7 +9,6 @@
 	<script type="text/javascript">
         dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
         dojo.require("plugd.trigger");
-
 		dojo.require("doh.runner");
         dojo.require("dojox.rails.decorators.RemoteLink");
         
@@ -30,7 +29,9 @@
 
                     remote = new drd.RemoteLink("test_with_data_url");
                     t.is("/bar", remote._requestArgs.url);
-				},
+				}
+            },
+            {
                 // These features are more heavily tested in the updater and request,
                 // but they deserve a little attention here to make sure they work with
                 // an inherited module.

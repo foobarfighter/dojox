@@ -1,94 +1,184 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
 <head>
-	<title></title>
-	<script type="text/javascript" src="../../../../dojo/dojo.js"
-	    djConfig="isDebug: true, parseOnLoad: false"></script>
-	<script type="text/javascript">
-		dojo.require("doh.runner");
-		dojo.require("dojox.rails");
-		
-		doh.register("dojox.rails.tests.decorators.RemoteForm", [
-			{
-				name: "domNode",
-				runTest: function(t) {
-                    var decorator = dojox.rails.manager.byNode("test_base");
-                    t.is(dojo.byId("test_base"), decorator.domNode);
-				}
+    <title></title>
+    <script type="text/javascript" src="../../../../dojo/dojo.js"
+            djConfig="isDebug: true"></script>
+    <script type="text/javascript">
+        dojo.registerModulePath("plugd", "../dojox/rails/tests/plugd");
+        dojo.require("plugd.trigger");
+        dojo.require("doh.runner");
+        dojo.require("dojox.rails.decorators.RemoteForm");
+        dojo.require("dojox.rails.tests.helpers");
+
+        var remote;
+        function setup(){
+            resetSandbox();
+            createCommonCallbacks();
+        }
+
+        function teardown(){
+            if (remote){remote.destroy();}
+        }
+
+        var drd = dojox.rails.decorators;
+        doh.register("dojox.rails.tests.decorators.RemoteForm", [
+            {
+                name: "Test Parse",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    remote = new drd.RemoteForm("test_base");
+                    t.is("/foo", remote._requestArgs.url);
+                    t.is("post", remote.getMethod());
+                }
+            },
+            {
+                name: "Test _submit",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    remote = new drd.RemoteForm("test_base");
+                    t.mock(dojo, "xhrPost");
+                    remote._submit();
+                    t.assertMock(dojo.xhrPost);
+                    
+                    t.is("/foo", dojo.xhrPost.__mockArgs[0].url);
+                    t.is("post", dojo.xhrPost.__mockArgs[0].method);
+                    t.is("Name", dojo.xhrPost.__mockArgs[0].content["foo[name]"]);
+                    t.is("AK", dojo.xhrPost.__mockArgs[0].content["foo[state]"]);
+                    t.t(dojo.isFunction(dojo.xhrPost.__mockArgs[0].error));
+                    t.t(dojo.isFunction(dojo.xhrPost.__mockArgs[0].load));
+                }
+            },
+            {
+                name: "Test update success",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    remote = new drd.RemoteForm("test_update");
+                    dojo.trigger("test_update", "submit");
+                    return deferredQuery(t, "#sandbox .test_success .success");
+                }
+			},
+            {
+                name: "Test update complete",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    remote = new drd.RemoteForm("test_update");
+                    dojo.trigger("test_update", "submit");
+                    return deferredQuery(t, "#sandbox .test_complete .success");
+                }
+			},
+            {
+                name: "Test success callback",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    t.mock(dojo.global, "testSuccess");
+
+                    remote = new drd.RemoteForm("test_callback");
+                    dojo.trigger("test_callback", "submit");
+                    return deferredMock(t, remote, dojo.global.testSuccess, 1);
+                }
+			},
+            {
+                name: "Test complete callback",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    t.mock(dojo.global, "testComplete");
+
+                    remote = new drd.RemoteForm("test_callback");
+                    dojo.trigger("test_callback", "submit");
+                    return deferredMock(t, remote, dojo.global.testComplete, 1);
+                }
+			},
+            {
+                name: "Test failure callback",
+                setUp: setup,
+                tearDown: teardown,
+                runTest: function(t) {
+                    t.mock(dojo.global, "testFailure");
+
+                    remote = new drd.RemoteForm("test_failure_callback");
+                    dojo.trigger("test_failure_callback", "submit");
+                    return deferredMock(t, remote, dojo.global.testFailure, 1);
+                }
 			}
-		]);
+        ]);
 
         dojo.addOnLoad(function() {
-            dojox.rails.parse();
             doh.run();
         });
-	</script>
+    </script>
 </head>
 <body>
 
-<form id="test_base" target="/foo" method="post" data-js-type="remote">
-    <input type="input" name="foo[name]" value="Name" />
+<div id="generator">
+    <div class="test_success">test success</div>
+    <div class="test_failure">test failure</div>
+    <div class="test_complete">test complete</div>
+</div>
+
+<div id="sandbox">
+</div>
+
+<form id="test_base" action="/foo" method="post" data-js-type="remote">
+    <input type="input" name="foo[name]" value="Name"/>
     <select name="foo[state]">
         <option value="AK">Alaska</option>
         <option value="CA">California</option>
     </select>
-    <input type="radio" name="foo[sex]" value="Male" /> Male
-    <input type="radio" name="foo[sex]" value="Female" /> Female
+    <input type="radio" name="foo[sex]" value="Male"/> Male
+    <input type="radio" name="foo[sex]" value="Female"/> Female
 
-    <input type="checkbox" name="foo[food]" value="Beer" />
-    <input type="checkbox" name="foo[food]" value="Junk" />
-    <input type="checkbox" name="foo[food]" value="Health" />
+    <input type="checkbox" name="foo[food]" value="Beer"/>
+    <input type="checkbox" name="foo[food]" value="Junk"/>
+    <input type="checkbox" name="foo[food]" value="Health"/>
 
     <input type="button" name="foo[button]" value="my_button">
     <input type="submit" name="foo[submit]" value="submit">
 </form>
 
-<form id="test_update" target="/foo" method="post" data-js-type="remote"
-      data-success-update="#test_success_update .success"
-      data-failure-update="#test_success_update .failure"
-      data-complete-update="#test_success_update .complete"
-      data-interactive-update="#test_success_update .interactive"
-      data-loaded-update="#test_success_update .loaded"
-      data-loading-update="#test_success_update .loading">
+<form id="test_update" action="../fixtures/test_ajax.html" method="post" data-js-type="remote" onsubmit="return false"
+      data-update-success="#sandbox .test_success"
+      data-update-failure="#sandbox .test_failure"
+      data-update-complete="#sandbox .test_complete">
 
-    <input type="input" name="foo[name]" value="Name" />
+    <input type="input" name="foo[name]" value="Name"/>
     <select name="foo[state]">
         <option value="AK">Alaska</option>
         <option value="CA">California</option>
     </select>
-    <input type="radio" name="foo[sex]" value="Male" /> Male
-    <input type="radio" name="foo[sex]" value="Female" /> Female
+    <input type="radio" name="foo[sex]" value="Male"/> Male
+    <input type="radio" name="foo[sex]" value="Female"/> Female
 
-    <input type="checkbox" name="foo[food]" value="Beer" />
-    <input type="checkbox" name="foo[food]" value="Junk" />
-    <input type="checkbox" name="foo[food]" value="Health" />
+    <input type="checkbox" name="foo[food]" value="Beer"/>
+    <input type="checkbox" name="foo[food]" value="Junk"/>
+    <input type="checkbox" name="foo[food]" value="Health"/>
 
     <input type="button" name="foo[button]" value="my_button">
     <input type="submit" name="foo[submit]" value="submit">
-
-    <div class="success"></div>
-    <div class="failure"></div>
-    <div class="complete"></div>
-    <div class="interactive"></div>
-    <div class="loaded"></div>
-    <div class="loading"></div>
 </form>
 
-<form id="test_update_response_code" target="/foo" method="post" data-js-type="remote"
-      data-404-update="#test_success_update_response_code .response_404"
-      data-302-update="#test_success_update_response_code .response_302">
+<!-- 
+<form id="test_update_response_code" action="/foo" method="post" data-js-type="remote"
+      data-404-update="#sandbox_response_code .response_404"
+      data-302-update="#sandbox_response_code .response_302">
 
-    <input type="input" name="foo[name]" value="Name" />
+    <input type="input" name="foo[name]" value="Name"/>
     <select name="foo[state]">
         <option value="AK">Alaska</option>
         <option value="CA">California</option>
     </select>
-    <input type="radio" name="foo[sex]" value="Male" /> Male
-    <input type="radio" name="foo[sex]" value="Female" /> Female
+    <input type="radio" name="foo[sex]" value="Male"/> Male
+    <input type="radio" name="foo[sex]" value="Female"/> Female
 
-    <input type="checkbox" name="foo[food]" value="Beer" />
-    <input type="checkbox" name="foo[food]" value="Junk" />
-    <input type="checkbox" name="foo[food]" value="Health" />
+    <input type="checkbox" name="foo[food]" value="Beer"/>
+    <input type="checkbox" name="foo[food]" value="Junk"/>
+    <input type="checkbox" name="foo[food]" value="Health"/>
 
     <input type="button" name="foo[button]" value="my_button">
     <input type="submit" name="foo[submit]" value="submit">
@@ -96,26 +186,43 @@
     <div class="response_404"></div>
     <div class="response_302"></div>
 </form>
+-->
 
-<form id="test_callback" target="/foo" method="post" data-js-type="remote"
-      data-success-code="function(request) {}"
-      data-failure-code="function(request) {}"
-      data-complete-code="function(request) {}"
-      data-interactive-code="function(request) {}"
-      data-loaded-code="function(request) {}"
-      data-loading-code="function(request) {}">
+<form id="test_callback" action="../fixtures/test_ajax.html" method="post" data-js-type="remote"
+      data-success-code="testSuccess"
+      data-failure-code="testFailure"
+      data-complete-code="testComplete">
 
-    <input type="input" name="foo[name]" value="Name" />
+    <input type="input" name="foo[name]" value="Name"/>
     <select name="foo[state]">
         <option value="AK">Alaska</option>
         <option value="CA">California</option>
     </select>
-    <input type="radio" name="foo[sex]" value="Male" /> Male
-    <input type="radio" name="foo[sex]" value="Female" /> Female
+    <input type="radio" name="foo[sex]" value="Male"/> Male
+    <input type="radio" name="foo[sex]" value="Female"/> Female
 
-    <input type="checkbox" name="foo[food]" value="Beer" />
-    <input type="checkbox" name="foo[food]" value="Junk" />
-    <input type="checkbox" name="foo[food]" value="Health" />
+    <input type="checkbox" name="foo[food]" value="Beer"/>
+    <input type="checkbox" name="foo[food]" value="Junk"/>
+    <input type="checkbox" name="foo[food]" value="Health"/>
+
+    <input type="button" name="foo[button]" value="my_button">
+    <input type="submit" name="foo[submit]" value="submit">
+</form>
+
+<form id="test_failure_callback" action="/foo" method="post" data-js-type="remote"
+      data-failure-code="testFailure">
+
+    <input type="input" name="foo[name]" value="Name"/>
+    <select name="foo[state]">
+        <option value="AK">Alaska</option>
+        <option value="CA">California</option>
+    </select>
+    <input type="radio" name="foo[sex]" value="Male"/> Male
+    <input type="radio" name="foo[sex]" value="Female"/> Female
+
+    <input type="checkbox" name="foo[food]" value="Beer"/>
+    <input type="checkbox" name="foo[food]" value="Junk"/>
+    <input type="checkbox" name="foo[food]" value="Health"/>
 
     <input type="button" name="foo[button]" value="my_button">
     <input type="submit" name="foo[submit]" value="submit">
