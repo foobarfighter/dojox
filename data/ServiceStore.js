@@ -309,10 +309,12 @@ dojo.declare("dojox.data.ServiceStore",
 				}
 				return results;
 			});
-			defResult.addErrback(args.onError && dojo.hitch(scope, args.onError));
+			defResult.addErrback(args.onError && function(err){
+				return args.onError.call(scope, err, args);
+			});
 			args.abort = function(){
 				// abort the request
-				defResult.ioArgs.xhr.abort();
+				defResult.cancel();
 			};
 			args.store = this;
 			return args;
