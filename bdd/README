@@ -65,7 +65,6 @@ maybe dojox.bdd.spec will appeal to you.
 Here's how dojox.bdd.spec tests look:
 
 === SNIP ===
-dojo.require("doh.runner");
 dojo.require("dojox.bdd.spec");
 doh.globalize();
 
@@ -95,8 +94,8 @@ doh.run();
 
 A little nicer right?  So what's going on here:
 
-// Pretty self explanatory... just requiring some modules
-dojo.require("doh.runner");
+// Pretty self explanatory... just requiring some modules.  dojox.bdd.spec
+// depends on doh.runner so you don't need to require it explicitly.
 dojo.require("dojox.bdd.spec");
 
 // Introduces the 'spec', 'before', 'after' and 'it' methods to the global
