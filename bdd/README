@@ -1,0 +1,135 @@
+-------------------------------------------------------------------------------
+Dojo BDD
+-------------------------------------------------------------------------------
+Release date: 0.0.1
+-------------------------------------------------------------------------------
+Project state:
+experimental
+-------------------------------------------------------------------------------
+Credits:
+	Bob Remeika
+-------------------------------------------------------------------------------
+Project description:
+
+Library to add BDD style test declarations to doh unit testing.  Only two
+levels of nesting are supported at the moment, but at the very least it makes
+creating unit tests a little bit easier.  No more ugly braces and brackets
+generously littered throughout your test code.
+
+-------------------------------------------------------------------------------
+Dependencies:
+Dojo Core
+doh.runner
+-------------------------------------------------------------------------------
+Documentation
+
+Tired of this?
+
+=== SNIP ===
+dojo.require("doh.runner");
+
+doh.register("dojox.rails.tests.decorators.FormObserver", [
+	{
+		setUp: function() { ... },
+		tearDown: function() { ... },
+		name: "Foo Test",
+		runTest: function(t){
+			...
+		}
+	},
+	{
+		setUp: function() { ... },
+		tearDown: function() { ... },
+		name: "Bar Test",
+		runTest: function(t){
+			...
+		}
+	},
+	{
+		setUp: function() { ... },
+		tearDown: function() { ... },
+		name: "Baz Test",
+		runTest: function(t){
+			...
+		}
+	}
+]);
+doh.run();
+=== /SNIP ===
+
+Lots of curly mustaches and brackets everywhere.  Wait... did you forget a
+comma?  Do the tests look like something you should be sending over the wire
+for machines to interpret rather than an actual human being?  Well... then
+maybe dojox.bdd.spec will appeal to you.
+
+Here's how dojox.bdd.spec tests look:
+
+=== SNIP ===
+dojo.require("doh.runner");
+dojo.require("dojox.bdd.spec");
+doh.globalize();
+
+spec("when click this widget", function() {
+	before(function(){
+		...
+	});
+	
+	after(function(){
+	
+	});
+
+	it("does something totally AWESOME!", function(t){
+		...
+	});
+	
+	it("submits some data to a machine", function(t){
+		...
+	});
+	
+	it("tells the user that they did good... real good", function(t){
+		...
+	});
+});
+doh.run();
+=== /SNIP ===
+
+A little nicer right?  So what's going on here:
+
+// Pretty self explanatory... just requiring some modules
+dojo.require("doh.runner");
+dojo.require("dojox.bdd.spec");
+
+// Introduces the 'spec', 'before', 'after' and 'it' methods to the global
+// namespace.  Otherwise you can access these methods via doh.spec(),
+// doh.before()... etc.  You can do it that way if you want, but that lengthy
+// syntax kind of defeats the whole purpose of this module.
+doh.globalize();
+
+// This is actually just registering a doh test group.  You will put all of your
+// tests inside the function.
+spec("when click this widget", function() { ... });
+
+// This will run before all of your tests in this spec group
+before(function(){ ... });
+
+// This will run after all of your tests in this spec group
+after(function(){ ... });
+
+// This is your test.  Use doh assertions on 't' and WOOHOO! You've got BDD style
+// tests.  Deferred tests also work.
+it("does something totally AWESOME!", function(t){ ... });
+
+
+-------------------------------------------------------------------------------
+Installation instructions
+
+In your test code, after you require doh.runner, require this module:
+
+dojo.require("doh.runner");
+dojo.require("dojox.bdd.spec");
+
+-------------------------------------------------------------------------------
+TODO
+
+- Update doh so that it can support deeper nesting of specs
+- Test the test framework
