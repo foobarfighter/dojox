@@ -119,6 +119,9 @@ after(function(){ ... });
 // tests.  Deferred tests also work.
 it("does something totally AWESOME!", function(t){ ... });
 
+A quick note about nesting.  Doh doesn't have great support for nesting tests.
+Because of this, we can't nest 'spec' or 'it'.  I would love help with adding
+better nesting support to doh so we can nest specs just as you would in rspec.
 
 -------------------------------------------------------------------------------
 Installation instructions

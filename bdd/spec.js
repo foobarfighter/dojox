@@ -76,7 +76,7 @@ doh.spec.register = function() {
   });
 }
 
-doh.pollute = function(){
+doh.globalize = function(){
   var makeGlobal = ['spec', 'it', 'before', 'after'];
   dojo.forEach(makeGlobal, function(func, i, array) {
     dojo.global[func] = doh[func];
