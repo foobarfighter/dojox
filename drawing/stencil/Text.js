@@ -89,9 +89,9 @@ StencilPoints: [
 			var w = o.width =="auto" ? 1 : o.width;
 			var h = o.height || this._lineHeight;
 			this.points = [
-				{x:o.x, y:o.y}, 						// TL
+				{x:o.x, y:o.y}, 				// TL
 				{x:o.x + w, y:o.y},				// TR
-				{x:o.x + w, y:o.y + h},	// BR
+				{x:o.x + w, y:o.y + h},			// BR
 				{x:o.x, y:o.y + h}				// BL
 			];
 			return this.points;
@@ -132,7 +132,6 @@ StencilPoints: [
 			}
 			
 			var d = this.pointsToData();
-			var w = d.width;
 			var h = this._lineHeight;
 			var x = d.x + this.style.text.pad*2;
 			var y = d.y + this._lineHeight - (this.textSize*.4);
@@ -189,11 +188,11 @@ StencilPoints: [
 		makeFit: function(text, w){
 			var span = dojo.create('span', {innerHTML:text, id:"foo"}, document.body);
 			var sz = 1;
-			dojo.style(span, "fontSize", sz+"px")
+			dojo.style(span, "fontSize", sz+"px");
 			var cnt = 30;
 			while(dojo.marginBox(span).w<w){
 				sz++;
-				dojo.style(span, "fontSize", sz+"px")
+				dojo.style(span, "fontSize", sz+"px");
 				if(cnt--<=0) break;
 			}
 			sz--;

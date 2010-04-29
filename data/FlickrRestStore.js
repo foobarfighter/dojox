@@ -399,9 +399,9 @@ dojo.declare("dojox.data.FlickrRestStore",
 			case "imageUrl":
 				return [ item.media.l ]; // String
 			case "imageUrlOriginal":
-                                return [ item.media.o ]; // String
+				return [ item.media.o ]; // String
 			case "imageUrlLarge":
-		                return [ item.media.l ]; // String
+				return [ item.media.l ]; // String
 			case "imageUrlMedium":
 				return [ item.media.m ]; // String
 			case "imageUrlThumb":
@@ -445,11 +445,12 @@ dojo.declare("dojox.data.FlickrRestStore",
                 template[3] = item.server;
                 template[5] = item.id;
                 template[7] = item.secret;
+                
                 var base = template.join("");
 				item.media = {
                     s: base + "_s.jpg",
-                    m: base + ".jpg",
-                    l: base + "_l.jpg",
+                    m: base + "_m.jpg",
+                    l: base + ".jpg",
                     t: base + "_t.jpg",
                     o: base + "_o.jpg"
 				};

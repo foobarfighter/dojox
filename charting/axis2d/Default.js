@@ -10,16 +10,152 @@ dojo.require("dojox.gfx");
 dojo.require("dojox.lang.functional");
 dojo.require("dojox.lang.utils");
 
+/*=====
+	dojox.charting.axis2d.__AxisCtorArgs = function(
+		vertical, fixUpper, fixLower, natural, leftBottom,
+		includeZero, fixed, majorLabels, minorTicks, minorLabels, microTicks, htmlLabels,
+		min, max, from, to, majorTickStep, minorTickStep, microTickStep,
+		labels, labelFunc, maxLabelSize,
+		stroke, majorTick, minorTick, microTick, tick,
+		font, fontColor
+	){
+	//	summary:
+	//		Optional arguments used in the definition of an axis.
+	//
+	//	vertical: Boolean?
+	//		A flag that says whether an axis is vertical (i.e. y axis) or horizontal. Default is false (horizontal).
+	//	fixUpper: String?
+	//		Align the greatest value on the axis with the specified tick level. Options are "major", "minor", "micro", or "none".  Defaults to "none".
+	//	fixLower: String?
+	//		Align the smallest value on the axis with the specified tick level. Options are "major", "minor", "micro", or "none".  Defaults to "none".
+	//	natural: Boolean?
+	//		Ensure tick marks are made on "natural" numbers. Defaults to false.
+	//	leftBottom: Boolean?
+	//		The position of a vertical axis; if true, will be placed against the left-bottom corner of the chart.  Defaults to true.
+	//	includeZero: Boolean?
+	//		Include 0 on the axis rendering.  Default is false.
+	//	fixed: Boolean?
+	//		Force all axis labels to be fixed numbers.  Default is true.
+	//	majorLabels: Boolean?
+	//		Flag to draw all labels at major ticks. Default is true.
+	//	minorTicks: Boolean?
+	//		Flag to draw minor ticks on an axis.  Default is true.
+	//	minorLabels: Boolean?
+	//		Flag to draw labels on minor ticks. Default is true.
+	//	microTicks: Boolean?
+	//		Flag to draw micro ticks on an axis. Default is false.
+	//	htmlLabels: Boolean?
+	//		Flag to use HTML (as opposed to the native vector graphics engine) to draw labels. Default is true.
+	//	min: Number?
+	//		The smallest value on an axis. Default is 0.
+	//	max: Number?
+	//		The largest value on an axis. Default is 1.
+	//	from: Number?
+	//		Force the chart to render data visible from this value. Default is 0.
+	//	to: Number?
+	//		Force the chart to render data visible to this value. Default is 1.
+	//	majorTickStep: Number?
+	//		The amount to skip before a major tick is drawn.  Default is 4.
+	//	minorTickStep: Number?
+	//		The amount to skip before a minor tick is drawn. Default is 2.
+	//	microTickStep: Number?
+	//		The amount to skip before a micro tick is drawn. Default is 1.
+	//	labels: Object[]?
+	//		An array of labels for major ticks, with corresponding numeric values, ordered by value.
+	//	labelFunc: Function?
+	//		An optional function used to compute label values.
+	//	maxLabelSize: Number?
+	//		The maximum size, in pixels, for a label.  To be used with the optional label function.
+	//	stroke: dojox.gfx.Stroke?
+	//		An optional stroke to be used for drawing an axis.
+	//	majorTick: Object?
+	//		An object containing a dojox.gfx.Stroke, and a length (number) for a major tick.
+	//	minorTick: Object?
+	//		An object containing a dojox.gfx.Stroke, and a length (number) for a minor tick.
+	//	microTick: Object?
+	//		An object containing a dojox.gfx.Stroke, and a length (number) for a micro tick.
+	//	tick: Object?
+	//		An object containing a dojox.gfx.Stroke, and a length (number) for a tick.
+	//	font: String?
+	//		An optional font definition (as used in the CSS font property) for labels.
+	//	fontColor: String|dojo.Color?
+	//		An optional color to be used in drawing labels.
+
+	this.vertical = vertical;
+	this.fixUpper = fixUpper;
+	this.fixLower = fixLower;
+	this.natural = natural;
+	this.leftBottom = leftBottom;
+	this.includeZero = includeZero;
+	this.fixed = fixed;
+	this.majorLabels = majorLabels;
+	this.minorTicks = minorTicks;
+	this.minorLabels = minorLabels;
+	this.microTicks = microTicks;
+	this.htmlLabels = htmlLabels;
+	this.min = min;
+	this.max = max;
+	this.from = from;
+	this.to = to;
+	this.majorTickStep = majorTickStep;
+	this.minorTickStep = minorTickStep;
+	this.microTickStep = microTickStep;
+	this.labels = labels;
+	this.labelFunc = labelFunc;
+	this.maxLabelSize = maxLabelSize;
+	this.stroke = stroke;
+	this.majorTick = majorTick;
+	this.minorTick = minorTick;
+	this.microTick = microTick;
+	this.tick = tick;
+	this.font = font;
+	this.fontColor = fontColor;
+}
+=====*/
 (function(){
 	var dc = dojox.charting,
 		df = dojox.lang.functional,
 		du = dojox.lang.utils,
 		g = dojox.gfx,
 		lin = dc.scaler.linear,
+		merge = du.merge,
 		labelGap = 4;	// in pixels
 
 	dojo.declare("dojox.charting.axis2d.Default", dojox.charting.axis2d.Base, {
-		 defaultParams: {
+		//	summary:
+		//		The default axis object used in dojox.charting.  See dojox.charting.Chart2D.addAxis for details.
+		//
+		//	defaultParams: Object
+		//		The default parameters used to define any axis.
+		//	optionalParams: Object
+		//		Any optional parameters needed to define an axis.
+				
+		/*
+		//	TODO: the documentation tools need these to be pre-defined in order to pick them up
+		//	correctly, but the code here is partially predicated on whether or not the properties
+		//	actually exist.  For now, we will leave these undocumented but in the code for later. -- TRT
+			
+		//	opt: Object
+		//		The actual options used to define this axis, created at initialization.
+		//	scalar: Object
+		//		The calculated helper object to tell charts how to draw an axis and any data.
+		//	ticks: Object
+		//		The calculated tick object that helps a chart draw the scaling on an axis.
+		//	dirty: Boolean
+		//		The state of the axis (whether it needs to be redrawn or not)
+		//	scale: Number
+		//		The current scale of the axis.
+		//	offset: Number
+		//		The current offset of the axis.
+
+		opt: null,
+		scalar: null,
+		ticks: null,
+		dirty: true,
+		scale: 1,
+		offset: 0,
+		*/
+		defaultParams: {
 			vertical:    false,		// true for vertical axis
 			fixUpper:    "none",	// align the upper on ticks: "major", "minor", "micro", "none"
 			fixLower:    "none",	// align the lower on ticks: "major", "minor", "micro", "none"
@@ -55,46 +191,90 @@ dojo.require("dojox.lang.utils");
 			majorTick:		{},	// stroke + length for a tick
 			minorTick:		{},	// stroke + length for a tick
 			microTick:		{},	// stroke + length for a tick
+			tick:           {},	// stroke + length for a tick
 			font:			"",	// font for labels
 			fontColor:		""	// color for labels as a string
 		},
 
 		constructor: function(chart, kwArgs){
+			//	summary:
+			//		The constructor for an axis.
+			//	chart: dojox.charting.Chart2D
+			//		The chart the axis belongs to.
+			//	kwArgs: dojox.charting.axis2d.__AxisCtorArgs?
+			//		Any optional keyword arguments to be used to define this axis.
 			this.opt = dojo.delegate(this.defaultParams, kwArgs);
 			// du.updateWithObject(this.opt, kwArgs);
 			du.updateWithPattern(this.opt, kwArgs, this.optionalParams);
 		},
 		dependOnData: function(){
-			return !("min" in this.opt) || !("max" in this.opt);
+			//	summary:
+			//		Find out whether or not the axis options depend on the data in the axis.
+			return !("min" in this.opt) || !("max" in this.opt);	//	Boolean
 		},
 		clear: function(){
+			//	summary:
+			//		Clear out all calculated properties on this axis;
+			//	returns: dojox.charting.axis2d.Default
+			//		The reference to the axis for functional chaining.
 			delete this.scaler;
 			delete this.ticks;
 			this.dirty = true;
-			return this;
+			return this;	//	dojox.charting.axis2d.Default
 		},
 		initialized: function(){
+			//	summary:
+			//		Finds out if this axis has been initialized or not.
+			//	returns: Boolean
+			//		Whether a scaler has been calculated and if the axis is not dirty.
 			return "scaler" in this && !(this.dirty && this.dependOnData());
 		},
 		setWindow: function(scale, offset){
+			//	summary:
+			//		Set the drawing "window" for the axis.
+			//	scale: Number
+			//		The new scale for the axis.
+			//	offset: Number
+			//		The new offset for the axis.
+			//	returns: dojox.charting.axis2d.Default
+			//		The reference to the axis for functional chaining.
 			this.scale  = scale;
 			this.offset = offset;
-			return this.clear();
+			return this.clear();	//	dojox.charting.axis2d.Default
 		},
 		getWindowScale: function(){
-			return "scale" in this ? this.scale : 1;
+			//	summary:
+			//		Get the current windowing scale of the axis.
+			return "scale" in this ? this.scale : 1;	//	Number
 		},
 		getWindowOffset: function(){
-			return "offset" in this ? this.offset : 0;
+			//	summary:
+			//		Get the current windowing offset for the axis.
+			return "offset" in this ? this.offset : 0;	//	Number
 		},
 		_groupLabelWidth: function(labels, font){
-			if(labels[0]["text"]){
+			if(!labels.length){
+				return 0;
+			}
+			if(dojo.isObject(labels[0])){
 				labels = df.map(labels, function(label){ return label.text; });
 			}
 			var s = labels.join("<br>");
 			return dojox.gfx._base._getTextBox(s, {font: font}).w || 0;
 		},
 		calculate: function(min, max, span, labels){
+			//	summary:
+			//		Perform all calculations needed to render this axis.
+			//	min: Number
+			//		The smallest value represented on this axis.
+			//	max: Number
+			//		The largest value represented on this axis.
+			//	span: Number
+			//		The span over which axis calculations are made (TODO: Eugene, is this right?)
+			//	labels: dojox.charting.axis2d.__AxisCtorArgs?
+			//		Optional keyword argument object to help determine options (TODO: Eugene, is this right?)
+			//	returns: dojox.charting.axis2d.Default
+			//		The reference to the axis for functional chaining.
 			if(this.initialized()){
 				return this;
 			}
@@ -140,7 +320,8 @@ dojo.require("dojox.lang.utils");
 				}
 			}
 			var minMinorStep = 0, ta = this.chart.theme.axis,
-				taFont = "font" in o ? o.font : ta.font,
+				// TODO: we use one font --- of major tick, we need to use major and minor fonts
+				taFont = o.font || (ta.majorTick && ta.majorTick.font) || (ta.tick && ta.tick.font),
 				size = taFont ? g.normalizedLength(g.splitFontString(taFont).size) : 0;
 			if(this.vertical){
 				if(size){
@@ -186,15 +367,23 @@ dojo.require("dojox.lang.utils");
 			}
 			this.scaler.minMinorStep = minMinorStep;
 			this.ticks = lin.buildTicks(this.scaler, o);
-			return this;
+			return this;	//	dojox.charting.axis2d.Default
 		},
 		getScaler: function(){
-			return this.scaler;
+			//	summary:
+			//		Get the pre-calculated scaler object.
+			return this.scaler;	//	Object
 		},
 		getTicks: function(){
-			return this.ticks;
+			//	summary:
+			//		Get the pre-calculated ticks object.
+			return this.ticks;	//	Object
 		},
 		getOffsets: function(){
+			//	summary:
+			//		Get the physical offset values for this axis (used in drawing data series).
+			//	returns: Object
+			//		The calculated offsets in the form of { l, r, t, b } (left, right, top, bottom).
 			var o = this.opt;
 			var offsets = { l: 0, r: 0, t: 0, b: 0 },
 				labelWidth,
@@ -205,9 +394,10 @@ dojo.require("dojox.lang.utils");
 				gl = dc.scaler.common.getNumericLabel,
 				offset = 0,
 				ta = this.chart.theme.axis,
-				taFont = "font" in o ? o.font : ta.font,
-				taMajorTick = "majorTick" in o ? o.majorTick : ta.majorTick,
-				taMinorTick = "minorTick" in o ? o.minorTick : ta.minorTick,
+				// TODO: we use one font --- of major tick, we need to use major and minor fonts
+				taFont = o.font || (ta.majorTick && ta.majorTick.font) || (ta.tick && ta.tick.font),
+				taMajorTick = this.chart.theme.getTick("major", o),
+				taMinorTick = this.chart.theme.getTick("minor", o),
 				size = taFont ? g.normalizedLength(g.splitFontString(taFont).size) : 0,
 				s = this.scaler;
 			if(!s){
@@ -261,11 +451,19 @@ dojo.require("dojox.lang.utils");
 			if(labelWidth){
 				this._cachedLabelWidth = labelWidth;
 			}
-			return offsets;
+			return offsets;	//	Object
 		},
 		render: function(dim, offsets){
+			//	summary:
+			//		Render/draw the axis.
+			//	dim: Object
+			//		An object of the form { width, height}.
+			//	offsets: Object
+			//		An object of the form { l, r, t, b }.
+			//	returns: dojox.charting.axis2d.Default
+			//		The reference to the axis for functional chaining.
 			if(!this.dirty){
-				return this;
+				return this;	//	dojox.charting.axis2d.Default
 			}
 			// prepare variable
 			var o = this.opt;
@@ -276,13 +474,17 @@ dojo.require("dojox.lang.utils");
 				labelOffset,
 				labelAlign,
 				ta = this.chart.theme.axis,
+				
+				// TODO: we use one font --- of major tick, we need to use major and minor fonts
+				taFont = o.font || (ta.majorTick && ta.majorTick.font) || (ta.tick && ta.tick.font),
+				// TODO: we use one font color --- we need to use different colors
+				taFontColor = o.fontColor || (ta.majorTick && ta.majorTick.fontColor) || (ta.tick && ta.tick.fontColor) || "black",
+				taMajorTick = this.chart.theme.getTick("major", o),
+				taMinorTick = this.chart.theme.getTick("minor", o),
+				taMicroTick = this.chart.theme.getTick("micro", o),
+
+				tickSize = Math.max(taMajorTick.length, taMinorTick.length, taMicroTick.length),
 				taStroke = "stroke" in o ? o.stroke : ta.stroke,
-				taMajorTick = "majorTick" in o ? o.majorTick : ta.majorTick,
-				taMinorTick = "minorTick" in o ? o.minorTick : ta.minorTick,
-				taMicroTick = "microTick" in o ? o.microTick : ta.minorTick,
-				taFont = "font" in o ? o.font : ta.font,
-				taFontColor = "fontColor" in o ? o.fontColor : ta.fontColor,
-				tickSize = Math.max(taMajorTick.length, taMinorTick.length),
 				size = taFont ? g.normalizedLength(g.splitFontString(taFont).size) : 0;
 			if(this.vertical){
 				start = { y: dim.height - offsets.b };
@@ -414,7 +616,7 @@ dojo.require("dojox.lang.utils");
 			}
 
 			this.dirty = false;
-			return this;
+			return this;	//	dojox.charting.axis2d.Default
 		}
 	});
 })();

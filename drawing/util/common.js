@@ -4,7 +4,7 @@ dojo.require("dojox.math.round");
 (function(){
 	
 	var uidMap = {};
-
+	var start = 0;
 	dojox.drawing.util.common	= {
 		// summary:
 		//		A collection of common methods used for DojoX Drawing.
@@ -54,7 +54,6 @@ dojo.require("dojox.math.round");
 			if(snap){
 				snap = snap/180;
 				var radians = this.radians(obj),
-					radius = this.length(obj),
 					seg = Math.PI * snap,
 					rnd = dojox.math.round(radians/seg),
 					new_radian = rnd*seg;
@@ -139,7 +138,7 @@ dojo.require("dojox.math.round");
 			//		(or starting) point, length and angle, find the
 			//		x,y point at the end of that line.
 			//
-			radians =  angle * Math.PI / 180.0;
+			var radians =  angle * Math.PI / 180.0;
 			var x = radius * Math.cos(radians) * -1;
 			var y = radius * Math.sin(radians) * -1;
 			return {
@@ -159,7 +158,6 @@ dojo.require("dojox.math.round");
 				return obj;	 // Object
 			}
 			var radius = this.length(obj);
-			var diff = min-((360-(max-min))/2);
 			var new_angle = angle > max ? max : min - angle < 100 ? min : max;
 			return this.pointOnCircle(obj.start.x,obj.start.y,radius, new_angle); // Object
 		},
@@ -175,7 +173,6 @@ dojo.require("dojox.math.round");
 			//				.125 would snap to 22.5 degrees, etc.
 			//
 			var radians = this.radians(obj),
-				angle = this.angle(obj),
 				radius = this.length(obj),
 				seg = Math.PI * ca,
 				rnd = Math.round(radians/seg),
@@ -186,6 +183,10 @@ dojo.require("dojox.math.round");
 		},
 		
 		// helpers
+		idSetStart: function(num){
+			start=num;
+		},
+		
 		uid: function(/* ? String */str){
 			// summary:
 			//		Creates a unique ID.
@@ -195,7 +196,7 @@ dojo.require("dojox.math.round");
 			//			and used in the id. Otherwise 'shape' is used.
 			//
 			str = str || "shape";
-			uidMap[str] = uidMap[str]===undefined ? 0 : uidMap[str] + 1;
+			uidMap[str] = uidMap[str]===undefined ? start : uidMap[str] + 1;
 			return str + uidMap[str]; // String
 		},
 		

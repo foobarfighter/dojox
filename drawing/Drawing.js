@@ -1,6 +1,5 @@
 dojo.provide("dojox.drawing.Drawing");
 
-
 (function(){
 	
 	var _plugsInitialized = false;
@@ -140,7 +139,7 @@ dojo.provide("dojox.drawing.Drawing");
 			}
 			
 			this.widgetId = this.id;
-			dojo.attr(this.domNode, "widgetId", this.widgetId)
+			dojo.attr(this.domNode, "widgetId", this.widgetId);
 			// If Dijit is available in the page, register with it
 			if(dijit && dijit.registry){
 				dijit.registry.add(this);
@@ -166,11 +165,11 @@ dojo.provide("dojox.drawing.Drawing");
 				this.registerTool(stencils[nm].name);
 			}
 			var tools = dojox.drawing.getRegistered("tool");
-			for(var nm in tools){
+			for(nm in tools){
 				this.registerTool(tools[nm].name);
 			}
 			var plugs = dojox.drawing.getRegistered("plugin");
-			for(var nm in plugs){
+			for(nm in plugs){
 				this.registerTool(plugs[nm].name);
 			}
 			this._createCanvas();
@@ -178,7 +177,7 @@ dojo.provide("dojox.drawing.Drawing");
 		},
 		
 		_createCanvas: function(){
-			console.info("drawing create canvas...")
+			console.info("drawing create canvas...");
 			this.canvas = new dojox.drawing.manager.Canvas({
 				srcRefNode:this.domNode,
 				util:this.util,
@@ -194,13 +193,13 @@ dojo.provide("dojox.drawing.Drawing");
 			//		If within a ContentPane this will get called automatically.
 			//		Can also be called directly.
 			//
-			dojo.style(this.domNode, {
+			box && dojo.style(this.domNode, {
 				width:box.w+"px",
 				height:box.h+"px"
 			});
 			if(!this.canvas){
 				this._createCanvas();		
-			}else{
+			}else if(box){
 				this.canvas.resize(box.w, box.h);
 			}
 		},
@@ -244,7 +243,7 @@ dojo.provide("dojox.drawing.Drawing");
 				var c = dojo.connect(this, "onSurfaceReady", this, function(){
 					dojo.disconnect(c);
 					this.initPlugins();
-				})
+				});
 				return;
 			}
 			
@@ -322,7 +321,7 @@ dojo.provide("dojox.drawing.Drawing");
 				var c = dojo.connect(this, "onSurfaceReady", this, function(){
 					dojo.disconnect(c);
 					this.addUI(type, options);
-				})
+				});
 				return false;
 			}
 			if(options && !options.data && !options.points){
@@ -359,7 +358,7 @@ dojo.provide("dojox.drawing.Drawing");
 				var c = dojo.connect(this, "onSurfaceReady", this, function(){
 					dojo.disconnect(c);
 					this.addStencil(type, options);
-				})
+				});
 				return false;
 			}
 			if(options && !options.data && !options.points){
@@ -409,7 +408,7 @@ dojo.provide("dojox.drawing.Drawing");
 			// summary:
 			//		Collects all Stencil data and returns an
 			//		Array of objects.
-			console.log("this.stencils", this.stencils)
+			console.log("this.stencils", this.stencils);
 			return this.stencils.exporter();  //Array
 		},
 		
@@ -444,7 +443,7 @@ dojo.provide("dojox.drawing.Drawing");
 			//
 			for(var nm in newStyle){
 				for(var n in newStyle[nm]){
-					console.log("  copy", nm, n, " to: ", newStyle[nm][n])
+					console.log("  copy", nm, n, " to: ", newStyle[nm][n]);
 					this.defaults[nm][n] = newStyle[nm][n];
 				}
 			}
@@ -458,9 +457,14 @@ dojo.provide("dojox.drawing.Drawing");
 			//		'addStencil'.
 			//
 			//console.info("--------------------------------------dojox.drawing.onRenderStencil:", stencil.id);
+			
 			this.stencils.register(stencil);
 			this.unSetTool();
-			this.setTool(this.currentType);
+			if(!this.defaults.clickMode) { 
+				this.setTool(this.currentType);
+			} else {
+				if (this.defaults.clickMode){this.defaults.clickable = true;}
+			}
 		},
 		
 		onDeleteStencil: function(/* Object */stencil){
@@ -515,6 +519,7 @@ dojo.provide("dojox.drawing.Drawing");
 			try{
 				this.currentStencil = new this.tools[this.currentType]({container:this.canvas.surface.createGroup(), util:this.util, mouse:this.mouse, keys:this.keys});
 				console.log("new tool is:", this.currentStencil.id, this.currentStencil);
+				if (this.defaults.clickMode) this.defaults.clickable = false;
 				this.currentStencil.connect(this.currentStencil, "onRender", this, "onRenderStencil");
 				this.currentStencil.connect(this.currentStencil, "destroy", this, "onDeleteStencil");
 			}catch(e){
