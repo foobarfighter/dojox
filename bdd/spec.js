@@ -1,6 +1,7 @@
 dojo.provide("dojox.bdd.spec");
 dojo.require("doh.runner");
 
+
 doh.specArray = [];
 doh.specArray.last = function() {
   return doh.specArray[doh.specArray.length-1];
