@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Test: DebugConsole</title>
+	<meta name="viewport" content="width=320; user-scalable=no" />
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	
+	<style type="text/css">
+		@import "/javascripts/dojo/dojo/resources/dojo.css";
+/*		@import "../css/dijitTests.css";*/
+
+		/* styles for this test */
+		.dijitContentPane:focus { color: cyan; font-weight: bold }
+		body { margin-left: 20px }
+		#mondrian .dijitSplitter { border: 0; background: black !important }
+		#mondrian .dijitSplitterH { height: 10px }
+		#mondrian .dijitSplitterV { width: 10px }
+		#mondrian .dijitSplitterThumb { display: none }
+		#mondrian .dijitSplitterActive { background-color: blue }
+		#mondrian SPAN { display: none }
+		#mondrian:hover SPAN { display: inline }
+
+	</style>
+
+	<!-- required: the default dijit theme: -->
+	<link id="themeStyles" rel="stylesheet" href="/javascripts/dojo/dijit/themes/tundra/tundra.css">
+	
+	
+	<script type="text/javascript" charset="utf-8" src="/javascripts/dojo/dojo/dojo.js" djConfig="parseOnLoad: false"></script>
+	<script type="text/javascript" charset="utf-8">
+		dojo.registerModulePath("phonegap", "../../phonegap");
+		dojo.require("phonegap.debug.DebugConsole");
+		dojo.require("dojo.parser");
+		dojo.addOnLoad(function() {
+			dojo.parser.parse()
+		});
+	</script>
+</head>
+<body>
+	<!-- <div dojoType="phonegap.debug.DebugConsole">
+		test content
+	</div> -->
+	<div dojoType="phonegap.debug.DebugConsole" id="watchedBC" persist="true" style="height: 200px; width: 100%">
+	</div>
+</body>
+</html>
