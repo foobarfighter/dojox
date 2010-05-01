@@ -1,8 +1,7 @@
-dojo.provide("phonegap.Toolbar");
-dojo.require("phonegap.phonegap");
-dojo.require("phonegap._Widget");
+dojo.provide("dojox.phonegap.Toolbar");
+dojo.require("dojox.phonegap._Widget");
 
-dojo.declare("phonegap.Toolbar", [phonegap._Widget], {
+dojo.declare("dojox.phonegap.Toolbar", [dojox.phonegap._Widget], {
 	_buttons: [],
 	_deviceReadyDispatched: false,
 	show: [],
@@ -28,7 +27,7 @@ dojo.declare("phonegap.Toolbar", [phonegap._Widget], {
 	},
 	
 	_addButton: function(node) {
-		var button = new phonegap.ToolbarButton({
+		var button = new dojox.phonegap.browser.ToolbarButton({
 			title:      dojo.attr(node, "title"),
 			name:       dojo.attr(node, "name"),
 			appearance: dojo.attr(node, "appearance"),
@@ -43,7 +42,7 @@ dojo.declare("phonegap.Toolbar", [phonegap._Widget], {
 	}
 });
 
-dojo.declare("phonegap.ToolbarButton", [phonegap._Widget], {
+dojo.declare("dojox.phonegap.ToolbarButton", [dojox.phonegap._Widget], {
 	name:       "",
 	title:      "",
 	appearance: "plain",

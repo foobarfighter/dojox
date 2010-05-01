@@ -1,10 +1,10 @@
-dojo.provide("phonegap.Layout");
+dojo.provide("dojox.phonegap.Layout");
 
-dojo.require("phonegap.phonegap");
-dojo.require("phonegap._Widget");
-dojo.require("phonegap.util");
+dojo.require("dojox.phonegap.phonegap");
+dojo.require("dojox.phonegap._Widget");
+dojo.require("dojox.phonegap.util");
 
-dojo.declare("phonegap.Layout", [phonegap._Widget], {
+dojo.declare("dojox.phonegap.Layout", [dojox.phonegap._Widget], {
 	_connect: [],
 	
 	constructor: function() {
@@ -14,7 +14,7 @@ dojo.declare("phonegap.Layout", [phonegap._Widget], {
 	
 	startup: function() {
 		dojo.addClass(this.domNode, "pgLayout");
-		dojo.addClass(this.domNode, "pg"+ phonegap.util.camel(phonegap.hostenv));
+		dojo.addClass(this.domNode, "pg"+ dojox.phonegap.util.camel(dojox.phonegap.hostenv));
 	},
 	
 	onDeviceReady: function() {

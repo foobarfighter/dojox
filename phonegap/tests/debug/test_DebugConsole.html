@@ -28,8 +28,8 @@
 	
 	<script type="text/javascript" charset="utf-8" src="/javascripts/dojo/dojo/dojo.js" djConfig="parseOnLoad: false"></script>
 	<script type="text/javascript" charset="utf-8">
-		dojo.registerModulePath("phonegap", "../../phonegap");
-		dojo.require("phonegap.debug.DebugConsole");
+		dojo.require("dojox.phonegap");
+		dojo.require("dojox.phonegap.debug.DebugConsole");
 		dojo.require("dojo.parser");
 		dojo.addOnLoad(function() {
 			dojo.parser.parse()
@@ -40,7 +40,7 @@
 	<!-- <div dojoType="phonegap.debug.DebugConsole">
 		test content
 	</div> -->
-	<div dojoType="phonegap.debug.DebugConsole" id="watchedBC" persist="true" style="height: 200px; width: 100%">
+	<div dojoType="dojox.phonegap.debug.DebugConsole" id="watchedBC" persist="true" style="height: 200px; width: 100%">
 	</div>
 </body>
 </html>

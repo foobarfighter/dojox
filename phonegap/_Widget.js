@@ -1,18 +1,17 @@
-dojo.provide("phonegap._Widget");
-dojo.require("phonegap.phonegap");
+dojo.provide("dojox.phonegap._Widget");
 dojo.require("dijit._Widget");
 
-dojo.declare("phonegap._Widget", [dijit._Widget], {
+dojo.declare("dojox.phonegap._Widget", [dijit._Widget], {
 	_deviceReadyDispatched: false,
 	_postDeviceReadyDispatched: false,
 	
 	constructor: function() {
-		this.ui = phonegap.uicontrols;
+		this.ui = dojox.phonegap.uicontrols;
 	},
 	
 	buildRendering: function() {
 		this.inherited(arguments);
-		phonegap.registry.register(this);
+		dojox.phonegap.registry.register(this);
 	},
 	
 	onDeviceReady: function() {},
@@ -29,7 +28,7 @@ dojo.declare("phonegap._Widget", [dijit._Widget], {
 	},
 	
 	destroy: function() {
-		phonegap.registry.unregister(this);
+		dojox.phonegap.registry.unregister(this);
 		this.inherited(arguments);
 	}
 });

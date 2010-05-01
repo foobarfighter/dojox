@@ -1,17 +1,10 @@
-dojo.provide("phonegap.tests.module");
+dojo.provide("dojox.phonegap.tests.module");
+
+// alert(dojo.moduleUrl("dojox.phonegap.tests","browser/test_ToolBar.html"));
 
 try{
-	// doh.registerUrl("dijit.tests.robot.Menu_mouse", dojo.moduleUrl("dijit","tests/robot/Menu_mouse.html"+userArgs)
-	doh.registerUrl("phonegap.tests.browser.ToolBar", dojo.moduleUrl("phonegap","tests/browser/test_ToolBar.html"));
-	
-	// dojo.require("dijit.tests._base.module");
-	// dojo.require("dijit.tests.infrastructure-module");
-	// 
-	// dojo.require("dijit.tests.general-module");
-	// dojo.require("dijit.tests.tree.module");
-	// dojo.require("dijit.tests.editor.module");
-	// dojo.require("dijit.tests.form.module");
-	// dojo.require("dijit.tests.layout.module");
+	dojo.require("dojox.phonegap.tests.loader");
+	// doh.registerUrl("dojox.phonegap.tests.browser.ToolBar", dojo.moduleUrl("dojox.phonegap.tests","browser/test_ToolBar.html"));
 }catch(e){
 	doh.debug(e);
 }

@@ -1,9 +1,9 @@
-dojo.provide("phonegap.Registry");
+dojo.provide("dojox.phonegap.Registry");
 
 // FIXME: Is this really a good idea?  This registry ensures that onDeviceReady
 // and onPostDeviceReady handlers are always called atomicly.
 
-dojo.declare("phonegap.Registry", [], {
+dojo.declare("dojox.phonegap.Registry", [], {
 	_registry: {},
 	_widgetsToCheck: {},
 	_pollTimeout: null,
@@ -24,7 +24,7 @@ dojo.declare("phonegap.Registry", [], {
 	
 	_check: function() {
 		var r = this._widgetsToCheck;
-		if (!phonegap.isDeviceReady || phonegap.util.isEmpty(r)){
+		if (!dojox.phonegap.isDeviceReady || dojox.phonegap.util.isEmpty(r)){
 			this._doPoll();
 			return;
 		}
