@@ -1,5 +1,5 @@
 dojo.provide("dojox.phonegap.loader");
-// dojo.require("dojox.phonegap.Registry");
+dojo.require("dojox.phonegap.Registry");
 
 dojox.phonegap.init = function(config) {
 	config = config || {};
@@ -37,7 +37,7 @@ dojox.phonegap.init = function(config) {
 	}
 	pg.isMobile = !pg.isBrowser;
 	
-	// pg.registry = new dojox.phonegap.Registry();
+	pg.registry = new dojox.phonegap.Registry();
 	dojo.connect(dojo.doc, "deviceready", function() {
 		pg.isDeviceReady = true;
 		dojo.publish("/phonegap/deviceReady", []);

@@ -71,6 +71,17 @@ spec("deviceready", function() {
 	});
 });
 
+spec("registry", function() {
+	before(function() {
+		dojox.phonegap.registry = null;
+	});
+	
+	it("initializes a phonegap widget registry", function(t) {
+		init();
+		t.t(dojox.phonegap.registry.declaredClass == "dojox.phonegap.Registry");
+	})
+});
+
 // spec("driver loading", function() {
 // 	it("loads a driver based on the host environment", function() {
 // 		
