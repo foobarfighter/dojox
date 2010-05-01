@@ -1,6 +1,5 @@
 dojo.provide("dojox.phonegap.Layout");
 
-dojo.require("dojox.phonegap.phonegap");
 dojo.require("dojox.phonegap._Widget");
 dojo.require("dojox.phonegap.util");
 

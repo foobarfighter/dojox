@@ -1,2 +1,2 @@
 dojo.provide("dojox.phonegap");
-dojo.require("dojox.phonegap._base.loader");
+dojo.require("dojox.phonegap.loader");
