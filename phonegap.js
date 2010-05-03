@@ -1,6 +1,5 @@
 dojo.provide("dojox.phonegap");
-// dojo.require("dojox.phonegap.loader");
-
+dojo.require("dojox.phonegap._base");
 dojo.require("dojox.mobile.parser");
 
 // Tell the loader that we actually got the dojo.parser module

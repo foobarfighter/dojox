@@ -275,6 +275,7 @@ dojo.declare(
 	buildRendering: function(){
 		this.domNode = this.containerNode = this.srcNodeRef || dojo.doc.createElement("H1");
 		this.domNode.className = "mblHeading";
+		this.view = dijit.byNode(this.domNode.parentNode);
 		if(this.back){
 			this._text = this.domNode.innerHTML;
 			var head = dojo.doc.createElement("DIV");
@@ -309,11 +310,11 @@ dojo.declare(
 			this.goTo(this.href);
 			return;
 		}
-		dijit.byNode(this.domNode.parentNode).performTransition(this.moveTo, -1, this.transition);
+		this.view.performTransition(this.moveTo, -1, this.transition);
 	},
 
 	goTo: function(/*String*/href){
-		dijit.byNode(this.domNode.parentNode).performTransition(null, -1, this.transition, this, function(){location.href = href;});
+		this.view.performTransition(null, -1, this.transition, this, function(){location.href = href;});
 	}
 });
 
