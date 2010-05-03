@@ -1,1 +1,0 @@
-dojo.provide("dojox.phonegap._base.hostenv_iphone");
