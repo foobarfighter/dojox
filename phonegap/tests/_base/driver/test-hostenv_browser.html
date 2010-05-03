@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Browser Driver Test</title>
+	<style type="text/css">
+		@import "../../../dojo/resources/dojo.css";
+		@import "css/dijitTests.css";
+	</style>
+	
+	<script type="text/javascript" src="../../../../../dojo/dojo.js"
+		djConfig="isDebug: true, parseOnLoad: false"></script>
+	<script type="text/javascript">
+		dojo.require("dojox.bdd.spec");
+		doh.globalize();
+		
+		dojo.require("dojox.mobile");
+		dojo.require("dojox.mobile.parser");
+		
+		dojo.require("dojox.phonegap");
+		dojo.require("dojox.phonegap.widgets");
+		
+		spec("dojox.phonegap.UIBrowserDriver", function() {
+			it("sets the dojox.phonegap.ui property driver", function(t) {
+				t.is("dojox.phonegap.UIBrowserDriver", dojox.phonegap.ui.declaredClass);
+			})
+		});
+		
+		doh.spec.register();
+		dojo.addOnLoad(function() {
+			doh.run();
+		});
+	</script>
+</head>
+<body>
+
+<div dojoType="dojox.mobile.View">
+	<h1 dojoType="dojox.phonegap.widgets.Heading">foo</div>
+</div>
+
+</body>
+</html>

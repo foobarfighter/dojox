@@ -1,10 +1,10 @@
-dojo.provide("dojox.phonegap.tests.loader");
+dojo.provide("dojox.phonegap.tests._base.loader");
 dojo.require("dojo.cache");
 dojo.require("dojox.bdd.spec");
 doh.globalize();
 
 var pgConfig = { init: false };
-dojo.require("dojox.phonegap.loader");
+dojo.require("dojox.phonegap._base.loader");
 
 function init(overrides){
 	dojox.phonegap.config = dojox.phonegap.configure(overrides)
